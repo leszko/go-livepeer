@@ -359,6 +359,7 @@ func TestSelectOrchestrator(t *testing.T) {
 
 	sd.infos = []*net.OrchestratorInfo{
 		{
+			AuthToken:    &net.AuthToken{},
 			TicketParams: protoParams,
 			PriceInfo: &net.PriceInfo{
 				PricePerUnit:  params.PricePerPixel.Num().Int64(),
@@ -366,6 +367,7 @@ func TestSelectOrchestrator(t *testing.T) {
 			},
 		},
 		{
+			AuthToken:    &net.AuthToken{},
 			TicketParams: protoParams2,
 			PriceInfo: &net.PriceInfo{
 				PricePerUnit:  params2.PricePerPixel.Num().Int64(),
