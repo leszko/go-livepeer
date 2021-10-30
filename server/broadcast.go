@@ -217,7 +217,7 @@ func (sp *SessionPool) selectSessions(sessionsNum int) []*BroadcastSession {
 
 	checkSessions := func(m *SessionPool) bool {
 		numSess := m.sel.Size()
-		if numSess < int(math.Ceil(float64(m.numOrchs)/2.0)) {
+		if numSess < int(math.Min(8.0, math.Ceil(float64(m.numOrchs)/2.0))) {
 			go m.refreshSessions()
 		}
 		return (numSess > 0 || len(sp.lastSess) > 0)
