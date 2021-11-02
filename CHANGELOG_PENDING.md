@@ -20,6 +20,8 @@
 
 #### Broadcaster
 
+- \#2083 Return 422 to the push client after max retry attempts for a segment (@jailuthra)
+
 #### Orchestrator
 
 #### Transcoder
