@@ -16,6 +16,7 @@ import (
 	"fmt"
 	"math/big"
 	"sort"
+	"sync"
 	"time"
 
 	"github.com/ethereum/go-ethereum/accounts"
@@ -121,6 +122,7 @@ type client struct {
 	backend        Backend
 	tm             *TransactionManager
 	transOpts      bind.TransactOpts
+	transOptsMu    sync.RWMutex
 
 	controllerAddr      ethcommon.Address
 	tokenAddr           ethcommon.Address
@@ -343,23 +345,23 @@ func (c *client) SetGasInfo(gasLimit uint64) error {
 	}
 }
 
-// TODO: add lock
-//func (c *client) setMaxGasPrice(maxGasPrice *big.Int) {
-//	// lock
-//	c.transOpts.GasFeeCap = maxGasPrice
-//	// unlock
-//}
+func (c *client) SetMaxGasPrice(maxGasPrice *big.Int) {
+	c.transOptsMu.Lock()
+	c.transOpts.GasFeeCap = maxGasPrice
+	c.transOptsMu.Unlock()
+}
 
 func (c *client) setTransactOpts(opts bind.TransactOpts) {
-	// lock
+	c.transOptsMu.Lock()
 	c.transOpts = opts
-	// unlock
+	c.transOptsMu.Unlock()
 }
 
 func (c *client) transactOpts() *bind.TransactOpts {
-	// lock
+	c.transOptsMu.RLock()
 	opts := c.transOpts
-	// unlock
+	c.transOptsMu.RUnlock()
+
 	return &opts
 }
 
