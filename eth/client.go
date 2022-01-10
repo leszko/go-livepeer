@@ -115,6 +115,7 @@ type LivepeerEthClient interface {
 	Sign([]byte) ([]byte, error)
 	SignTypedData(apitypes.TypedData) ([]byte, error)
 	SetGasInfo(uint64) error
+	SetMaxGasPrice(*big.Int)
 }
 
 type client struct {
