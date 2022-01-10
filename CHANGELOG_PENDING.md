@@ -11,6 +11,7 @@
 #### General
 
 - \#2163 Fix Session crashes right after the O sends a tx, revert #2111 Ensure `maxFeePerGas` in all transactions never exceed `-masGasPrice` (@leszko)
+- \#2171 Set `GasFeeCap` in each tx to `maxGasPrice` defined by the user (@leszko)
 
 #### Broadcaster
 
