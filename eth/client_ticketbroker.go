@@ -13,30 +13,30 @@ import (
 // This method wraps the underlying contract method in order to set the transaction options
 // value to the sum of the provided deposit and penalty escrow amounts
 func (c *client) FundDepositAndReserve(depositAmount, reserveAmount *big.Int) (*types.Transaction, error) {
-	opts := c.transactOpts
+	opts := c.transactOpts()
 	opts.Value = new(big.Int).Add(depositAmount, reserveAmount)
 
-	return c.TicketBrokerSession.Contract.FundDepositAndReserve(&opts, depositAmount, reserveAmount)
+	return c.TicketBrokerSession.Contract.FundDepositAndReserve(opts, depositAmount, reserveAmount)
 }
 
 // FundDeposit funds a sender's deposit
 // This method wraps the underlying contract method in order to set the transaction options
 // value to the provided deposit amount
 func (c *client) FundDeposit(amount *big.Int) (*types.Transaction, error) {
-	opts := c.transactOpts
+	opts := c.transactOpts()
 	opts.Value = amount
 
-	return c.TicketBrokerSession.Contract.FundDeposit(&opts)
+	return c.TicketBrokerSession.Contract.FundDeposit(opts)
 }
 
 // FundReserve funds a sender's reserve
 // This method wraps the underlying contract method in order to set the transaction options
 // value to the provided reserve amount
 func (c *client) FundReserve(amount *big.Int) (*types.Transaction, error) {
-	opts := c.transactOpts
+	opts := c.transactOpts()
 	opts.Value = amount
 
-	return c.TicketBrokerSession.Contract.FundReserve(&opts)
+	return c.TicketBrokerSession.Contract.FundReserve(opts)
 }
 
 // RedeemWinningTicket submits a ticket to be validated by the broker and if a valid winning ticket
@@ -46,7 +46,7 @@ func (c *client) RedeemWinningTicket(ticket *pm.Ticket, sig []byte, recipientRan
 	copy(recipientRandHash[:], ticket.RecipientRandHash.Bytes()[:32])
 
 	return c.TicketBrokerSession.Contract.RedeemWinningTicket(
-		&c.transactOpts,
+		c.transactOpts(),
 		contracts.MTicketBrokerCoreTicket{
 			Recipient:         ticket.Recipient,
 			Sender:            ticket.Sender,
