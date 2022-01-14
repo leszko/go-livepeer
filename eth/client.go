@@ -135,15 +135,15 @@ type client struct {
 	verifierAddr        ethcommon.Address
 	faucetAddr          ethcommon.Address
 
-	// Embedded contract sessions
-	*contracts.ControllerSession
-	*contracts.LivepeerTokenSession
-	*contracts.ServiceRegistrySession
-	*contracts.BondingManagerSession
-	*contracts.TicketBrokerSession
-	*contracts.RoundsManagerSession
-	*contracts.MinterSession
-	*contracts.LivepeerTokenFaucetSession
+	// Contract sessions
+	controllerSess          *contracts.ControllerSession
+	livepeerTokenSess       *contracts.LivepeerTokenSession
+	serviceRegistrySess     *contracts.ServiceRegistrySession
+	bondingManagerSess      *contracts.BondingManagerSession
+	ticketBrokerSess        *contracts.TicketBrokerSession
+	roundsManagerSess       *contracts.RoundsManagerSession
+	minterSess              *contracts.MinterSession
+	livepeerTokenFaucetSess *contracts.LivepeerTokenFaucetSession
 
 	gasLimit uint64
 	gasPrice *big.Int
@@ -181,7 +181,7 @@ func (c *client) setContracts(opts *bind.TransactOpts) error {
 		return err
 	}
 
-	c.ControllerSession = &contracts.ControllerSession{
+	c.controllerSess = &contracts.ControllerSession{
 		Contract: controller,
 	}
 
@@ -201,7 +201,7 @@ func (c *client) setContracts(opts *bind.TransactOpts) error {
 		return err
 	}
 
-	c.LivepeerTokenSession = &contracts.LivepeerTokenSession{
+	c.livepeerTokenSess = &contracts.LivepeerTokenSession{
 		Contract: token,
 	}
 
@@ -221,7 +221,7 @@ func (c *client) setContracts(opts *bind.TransactOpts) error {
 		return err
 	}
 
-	c.ServiceRegistrySession = &contracts.ServiceRegistrySession{
+	c.serviceRegistrySess = &contracts.ServiceRegistrySession{
 		Contract: serviceRegistry,
 	}
 
@@ -241,7 +241,7 @@ func (c *client) setContracts(opts *bind.TransactOpts) error {
 		return err
 	}
 
-	c.BondingManagerSession = &contracts.BondingManagerSession{
+	c.bondingManagerSess = &contracts.BondingManagerSession{
 		Contract:     bondingManager,
 		TransactOpts: *opts,
 	}
@@ -262,7 +262,7 @@ func (c *client) setContracts(opts *bind.TransactOpts) error {
 		return err
 	}
 
-	c.TicketBrokerSession = &contracts.TicketBrokerSession{
+	c.ticketBrokerSess = &contracts.TicketBrokerSession{
 		Contract: broker,
 	}
 
@@ -282,7 +282,7 @@ func (c *client) setContracts(opts *bind.TransactOpts) error {
 		return err
 	}
 
-	c.RoundsManagerSession = &contracts.RoundsManagerSession{
+	c.roundsManagerSess = &contracts.RoundsManagerSession{
 		Contract: roundsManager,
 	}
 
@@ -303,7 +303,7 @@ func (c *client) setContracts(opts *bind.TransactOpts) error {
 	}
 
 	// Client should never transact with the Minter directly so we don't include transact opts
-	c.MinterSession = &contracts.MinterSession{
+	c.minterSess = &contracts.MinterSession{
 		Contract: minter,
 	}
 
@@ -323,7 +323,7 @@ func (c *client) setContracts(opts *bind.TransactOpts) error {
 		return err
 	}
 
-	c.LivepeerTokenFaucetSession = &contracts.LivepeerTokenFaucetSession{
+	c.livepeerTokenFaucetSess = &contracts.LivepeerTokenFaucetSession{
 		Contract: faucet,
 	}
 
@@ -374,9 +374,18 @@ func (c *client) Backend() Backend {
 	return c.backend
 }
 
+// Controller
+func (c *client) GetContract(hash ethcommon.Hash) (ethcommon.Address, error) {
+	return c.controllerSess.GetContract(hash)
+}
+
+func (c *client) Paused() (bool, error) {
+	return c.controllerSess.Paused()
+}
+
 // Rounds
 func (c *client) InitializeRound() (*types.Transaction, error) {
-	i, err := c.RoundsManagerSession.CurrentRoundInitialized()
+	i, err := c.roundsManagerSess.CurrentRoundInitialized()
 	if err != nil {
 		return nil, err
 	}
@@ -384,22 +393,91 @@ func (c *client) InitializeRound() (*types.Transaction, error) {
 		glog.V(common.SHORT).Infof("Round already initialized")
 		return nil, errors.New("ErrRoundInitialized")
 	} else {
-		return c.RoundsManagerSession.Contract.InitializeRound(c.transactOpts())
+		return c.roundsManagerSess.Contract.InitializeRound(c.transactOpts())
 	}
+}
+
+func (c *client) CurrentRound() (*big.Int, error) {
+	return c.roundsManagerSess.CurrentRound()
+}
+
+func (c *client) CurrentRoundLocked() (bool, error) {
+	return c.roundsManagerSess.CurrentRoundLocked()
+}
+
+func (c *client) LastInitializedRound() (*big.Int, error) {
+	return c.roundsManagerSess.LastInitializedRound()
+}
+
+func (c *client) BlockHashForRound(round *big.Int) ([32]byte, error) {
+	return c.roundsManagerSess.BlockHashForRound(round)
+}
+
+func (c *client) CurrentRoundInitialized() (bool, error) {
+	return c.roundsManagerSess.CurrentRoundInitialized()
+}
+
+func (c *client) CurrentRoundStartBlock() (*big.Int, error) {
+	return c.roundsManagerSess.CurrentRoundStartBlock()
+}
+
+func (c *client) RoundLength() (*big.Int, error) {
+	return c.roundsManagerSess.RoundLength()
+}
+
+func (c *client) RoundLockAmount() (*big.Int, error) {
+	return c.roundsManagerSess.RoundLockAmount()
+}
+
+// Minter
+func (c *client) Inflation() (*big.Int, error) {
+	return c.minterSess.Inflation()
+}
+
+func (c *client) InflationChange() (*big.Int, error) {
+	return c.minterSess.InflationChange()
+}
+
+func (c *client) TargetBondingRate() (*big.Int, error) {
+	return c.minterSess.TargetBondingRate()
+}
+
+func (c *client) CurrentMintableTokens() (*big.Int, error) {
+	return c.minterSess.CurrentMintableTokens()
 }
 
 // Token
 func (c *client) Transfer(toAddr ethcommon.Address, amount *big.Int) (*types.Transaction, error) {
-	return c.LivepeerTokenSession.Contract.Transfer(c.transactOpts(), toAddr, amount)
+	return c.livepeerTokenSess.Contract.Transfer(c.transactOpts(), toAddr, amount)
+}
+
+func (c *client) Allowance(owner ethcommon.Address, spender ethcommon.Address) (*big.Int, error) {
+	return c.livepeerTokenSess.Allowance(owner, spender)
 }
 
 func (c *client) Request() (*types.Transaction, error) {
-	return c.LivepeerTokenFaucetSession.Contract.Request(c.transactOpts())
+	return c.livepeerTokenFaucetSess.Contract.Request(c.transactOpts())
+}
+
+func (c *client) BalanceOf(address ethcommon.Address) (*big.Int, error) {
+	return c.livepeerTokenSess.BalanceOf(address)
+}
+
+func (c *client) TotalSupply() (*big.Int, error) {
+	return c.livepeerTokenSess.TotalSupply()
+}
+
+func (c *client) NextValidRequest(addr ethcommon.Address) (*big.Int, error) {
+	return c.livepeerTokenFaucetSess.NextValidRequest(addr)
 }
 
 // Service Registry
 func (c *client) SetServiceURI(serviceURI string) (*types.Transaction, error) {
-	return c.ServiceRegistrySession.Contract.SetServiceURI(c.transactOpts(), serviceURI)
+	return c.serviceRegistrySess.Contract.SetServiceURI(c.transactOpts(), serviceURI)
+}
+
+func (c *client) GetServiceURI(addr ethcommon.Address) (string, error) {
+	return c.serviceRegistrySess.GetServiceURI(addr)
 }
 
 // Staking
@@ -412,7 +490,7 @@ func (c *client) Transcoder(blockRewardCut, feeShare *big.Int) (*types.Transacti
 	if locked {
 		return nil, ErrCurrentRoundLocked
 	} else {
-		return c.BondingManagerSession.Contract.Transcoder(c.transactOpts(), blockRewardCut, feeShare)
+		return c.bondingManagerSess.Contract.Transcoder(c.transactOpts(), blockRewardCut, feeShare)
 	}
 }
 
@@ -426,7 +504,7 @@ func (c *client) Bond(amount *big.Int, to ethcommon.Address) (*types.Transaction
 	// If existing allowance set by account for BondingManager is
 	// less than the bond amount, approve the necessary amount
 	if allowance.Cmp(amount) == -1 {
-		tx, err := c.LivepeerTokenSession.Contract.Approve(c.transactOpts(), c.bondingManagerAddr, amount)
+		tx, err := c.livepeerTokenSess.Contract.Approve(c.transactOpts(), c.bondingManagerAddr, amount)
 		if err != nil {
 			return nil, err
 		}
@@ -492,7 +570,7 @@ func (c *client) Bond(amount *big.Int, to ethcommon.Address) (*types.Transaction
 
 	newHints := simulateTranscoderPoolUpdate(to, newStake, transcoders, isFull)
 
-	return c.BondingManagerSession.Contract.BondWithHint(
+	return c.bondingManagerSess.Contract.BondWithHint(
 		c.transactOpts(),
 		amount,
 		to,
@@ -536,7 +614,7 @@ func (c *client) Unbond(amount *big.Int) (*types.Transaction, error) {
 
 	hints := simulateTranscoderPoolUpdate(delegator.DelegateAddress, newStake, transcoders, isFull)
 
-	return c.BondingManagerSession.Contract.UnbondWithHint(c.transactOpts(), amount, hints.PosPrev, hints.PosNext)
+	return c.bondingManagerSess.Contract.UnbondWithHint(c.transactOpts(), amount, hints.PosPrev, hints.PosNext)
 }
 
 func (c *client) RebondFromUnbonded(to ethcommon.Address, unbondingLockID *big.Int) (*types.Transaction, error) {
@@ -570,7 +648,7 @@ func (c *client) RebondFromUnbonded(to ethcommon.Address, unbondingLockID *big.I
 
 	hints := simulateTranscoderPoolUpdate(to, newStake, transcoders, isFull)
 
-	return c.BondingManagerSession.Contract.RebondFromUnbondedWithHint(c.transactOpts(), to, unbondingLockID, hints.PosPrev, hints.PosNext)
+	return c.bondingManagerSess.Contract.RebondFromUnbondedWithHint(c.transactOpts(), to, unbondingLockID, hints.PosPrev, hints.PosNext)
 }
 
 func (c *client) Rebond(unbondingLockID *big.Int) (*types.Transaction, error) {
@@ -610,27 +688,71 @@ func (c *client) Rebond(unbondingLockID *big.Int) (*types.Transaction, error) {
 
 	hints := simulateTranscoderPoolUpdate(delegator.DelegateAddress, newStake, transcoders, isFull)
 
-	return c.BondingManagerSession.Contract.RebondWithHint(c.transactOpts(), unbondingLockID, hints.PosPrev, hints.PosNext)
+	return c.bondingManagerSess.Contract.RebondWithHint(c.transactOpts(), unbondingLockID, hints.PosPrev, hints.PosNext)
 }
 
 func (c *client) WithdrawStake(unbondingLockID *big.Int) (*types.Transaction, error) {
-	return c.BondingManagerSession.Contract.WithdrawStake(c.transactOpts(), unbondingLockID)
+	return c.bondingManagerSess.Contract.WithdrawStake(c.transactOpts(), unbondingLockID)
 }
 
 func (c *client) WithdrawFees() (*types.Transaction, error) {
-	return c.BondingManagerSession.Contract.WithdrawFees(c.transactOpts())
+	return c.bondingManagerSess.Contract.WithdrawFees(c.transactOpts())
 }
 
 func (c *client) ClaimEarnings(endRound *big.Int) (*types.Transaction, error) {
-	return c.BondingManagerSession.Contract.ClaimEarnings(c.transactOpts(), endRound)
+	return c.bondingManagerSess.Contract.ClaimEarnings(c.transactOpts(), endRound)
+}
+
+func (c *client) GetTranscoderPoolMaxSize() (*big.Int, error) {
+	return c.bondingManagerSess.GetTranscoderPoolMaxSize()
+}
+
+func (c *client) TranscoderTotalStake(to ethcommon.Address) (*big.Int, error) {
+	return c.bondingManagerSess.TranscoderTotalStake(to)
+}
+
+func (c *client) GetTotalBonded() (*big.Int, error) {
+	return c.bondingManagerSess.GetTotalBonded()
+}
+
+func (c *client) PendingStake(delegator ethcommon.Address, endRound *big.Int) (*big.Int, error) {
+	return c.bondingManagerSess.PendingStake(delegator, endRound)
+}
+
+func (c *client) TranscoderStatus(transcoder ethcommon.Address) (uint8, error) {
+	return c.bondingManagerSess.TranscoderStatus(transcoder)
+}
+
+func (c *client) DelegatorStatus(delegator ethcommon.Address) (uint8, error) {
+	return c.bondingManagerSess.DelegatorStatus(delegator)
+}
+
+func (c *client) GetFirstTranscoderInPool() (ethcommon.Address, error) {
+	return c.bondingManagerSess.GetFirstTranscoderInPool()
+}
+
+func (c *client) PendingFees(delegator ethcommon.Address, endRound *big.Int) (*big.Int, error) {
+	return c.bondingManagerSess.PendingFees(delegator, endRound)
+}
+
+func (c *client) GetNextTranscoderInPool(transcoder ethcommon.Address) (ethcommon.Address, error) {
+	return c.bondingManagerSess.GetNextTranscoderInPool(transcoder)
+}
+
+func (c *client) GetTranscoderPoolSize() (*big.Int, error) {
+	return c.bondingManagerSess.GetTranscoderPoolSize()
+}
+
+func (c *client) UnbondingPeriod() (uint64, error) {
+	return c.bondingManagerSess.UnbondingPeriod()
 }
 
 func (c *client) IsActiveTranscoder() (bool, error) {
-	return c.BondingManagerSession.IsActiveTranscoder(c.Account().Address)
+	return c.bondingManagerSess.IsActiveTranscoder(c.Account().Address)
 }
 
 func (c *client) GetTranscoder(addr ethcommon.Address) (*lpTypes.Transcoder, error) {
-	tInfo, err := c.BondingManagerSession.GetTranscoder(addr)
+	tInfo, err := c.bondingManagerSess.GetTranscoder(addr)
 	if err != nil {
 		return nil, err
 	}
@@ -650,7 +772,7 @@ func (c *client) GetTranscoder(addr ethcommon.Address) (*lpTypes.Transcoder, err
 		return nil, err
 	}
 
-	active, err := c.BondingManagerSession.IsActiveTranscoder(addr)
+	active, err := c.bondingManagerSess.IsActiveTranscoder(addr)
 	if err != nil {
 		return nil, err
 	}
@@ -676,7 +798,7 @@ func (c *client) GetTranscoder(addr ethcommon.Address) (*lpTypes.Transcoder, err
 }
 
 func (c *client) GetTranscoderEarningsPoolForRound(addr ethcommon.Address, round *big.Int) (*lpTypes.TokenPools, error) {
-	tp, err := c.BondingManagerSession.GetTranscoderEarningsPoolForRound(addr, round)
+	tp, err := c.bondingManagerSess.GetTranscoderEarningsPoolForRound(addr, round)
 	if err != nil {
 		return nil, err
 	}
@@ -690,7 +812,7 @@ func (c *client) GetTranscoderEarningsPoolForRound(addr ethcommon.Address, round
 }
 
 func (c *client) GetDelegator(addr ethcommon.Address) (*lpTypes.Delegator, error) {
-	dInfo, err := c.BondingManagerSession.GetDelegator(addr)
+	dInfo, err := c.bondingManagerSess.GetDelegator(addr)
 	if err != nil {
 		glog.Errorf("Error getting delegator from bonding manager: %v", err)
 		return nil, err
@@ -748,7 +870,7 @@ func (c *client) GetDelegator(addr ethcommon.Address) (*lpTypes.Delegator, error
 }
 
 func (c *client) GetDelegatorUnbondingLock(addr ethcommon.Address, unbondingLockId *big.Int) (*lpTypes.UnbondingLock, error) {
-	lock, err := c.BondingManagerSession.GetDelegatorUnbondingLock(addr, unbondingLockId)
+	lock, err := c.bondingManagerSess.GetDelegatorUnbondingLock(addr, unbondingLockId)
 	if err != nil {
 		return nil, err
 	}
@@ -763,19 +885,23 @@ func (c *client) GetDelegatorUnbondingLock(addr ethcommon.Address, unbondingLock
 
 // TicketBroker
 func (c *client) Unlock() (*types.Transaction, error) {
-	return c.TicketBrokerSession.Contract.Unlock(c.transactOpts())
+	return c.ticketBrokerSess.Contract.Unlock(c.transactOpts())
 }
 
 func (c *client) CancelUnlock() (*types.Transaction, error) {
-	return c.TicketBrokerSession.Contract.CancelUnlock(c.transactOpts())
+	return c.ticketBrokerSess.Contract.CancelUnlock(c.transactOpts())
 }
 
 func (c *client) Withdraw() (*types.Transaction, error) {
-	return c.TicketBrokerSession.Contract.Withdraw(c.transactOpts())
+	return c.ticketBrokerSess.Contract.Withdraw(c.transactOpts())
 }
 
-func (c *client) Paused() (bool, error) {
-	return c.ControllerSession.Paused()
+func (c *client) UnlockPeriod() (*big.Int, error) {
+	return c.ticketBrokerSess.UnlockPeriod()
+}
+
+func (c *client) ClaimedReserve(reserveHolder ethcommon.Address, claimant ethcommon.Address) (*big.Int, error) {
+	return c.ticketBrokerSess.ClaimedReserve(reserveHolder, claimant)
 }
 
 func (c *client) TranscoderPool() ([]*lpTypes.Transcoder, error) {
@@ -857,7 +983,7 @@ func (c *client) Reward() (*types.Transaction, error) {
 
 	hints := simulateTranscoderPoolUpdate(addr, reward.Add(reward, tr.DelegatedStake), transcoders, len(transcoders) == int(maxSize.Int64()))
 
-	return c.BondingManagerSession.Contract.RewardWithHint(c.transactOpts(), hints.PosPrev, hints.PosNext)
+	return c.bondingManagerSess.Contract.RewardWithHint(c.transactOpts(), hints.PosPrev, hints.PosNext)
 }
 
 // Helpers
