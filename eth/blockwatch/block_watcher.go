@@ -137,7 +137,8 @@ func (w *Watcher) Subscribe(sink chan<- []*Event) event.Subscription {
 
 // GetLatestBlock returns the latest block processed
 func (w *Watcher) GetLatestBlock() (*MiniHeader, error) {
-	return w.stack.Peek()
+	h, err := w.stack.Peek()
+	return enrichWithL1BlockNumber(h), err
 }
 
 // InspectRetainedBlocks returns the blocks retained in-memory by the Watcher instance. It is not
@@ -154,7 +155,7 @@ func (w *Watcher) syncToLatestBlock() error {
 		return err
 	}
 
-	lastSeenHeader, err := w.stack.Peek()
+	lastSeenHeader, err := w.GetLatestBlock()
 	if err != nil {
 		return err
 	}
@@ -176,7 +177,7 @@ func (w *Watcher) syncToLatestBlock() error {
 // `startBlockDepth` supplied at instantiation.
 func (w *Watcher) pollNextBlock() error {
 	var nextBlockNumber *big.Int
-	latestHeader, err := w.stack.Peek()
+	latestHeader, err := w.GetLatestBlock()
 	if err != nil {
 		return err
 	}
@@ -211,7 +212,7 @@ func (w *Watcher) pollNextBlock() error {
 }
 
 func (w *Watcher) buildCanonicalChain(nextHeader *MiniHeader, events []*Event) ([]*Event, error) {
-	latestHeader, err := w.stack.Peek()
+	latestHeader, err := w.GetLatestBlock()
 	if err != nil {
 		return nil, err
 	}
@@ -315,7 +316,7 @@ func (w *Watcher) getMissedEventsToBackfill(ctx context.Context) ([]*Event, erro
 		blocksElapsed          int
 	)
 
-	latestRetainedBlock, err := w.stack.Peek()
+	latestRetainedBlock, err := w.GetLatestBlock()
 	if err != nil {
 		return events, err
 	}
@@ -387,6 +388,8 @@ func (w *Watcher) getMissedEventsToBackfill(ctx context.Context) ([]*Event, erro
 					Number: big.NewInt(0).SetUint64(log.BlockNumber),
 					Logs:   []types.Log{},
 				}
+				// TODO: Check if possible to get L1 Block number directly from Eth Logs
+				blockHeader = enrichWithL1BlockNumber(blockHeader)
 				hashToBlockHeader[log.BlockHash] = blockHeader
 			}
 			blockHeader.Logs = append(blockHeader.Logs, log)
@@ -401,6 +404,19 @@ func (w *Watcher) getMissedEventsToBackfill(ctx context.Context) ([]*Event, erro
 		return events, nil
 	}
 	return events, nil
+}
+
+func enrichWithL1BlockNumber(header *MiniHeader) *MiniHeader {
+	if header == nil || header.L1BlockNumber != nil {
+		return header
+	}
+	return &MiniHeader{
+		Hash:   header.Hash,
+		Number: header.Number,
+		// TODO: Get the header number
+		L1BlockNumber: header.Number,
+		Logs:          []types.Log{},
+	}
 }
 
 type logRequestResult struct {
