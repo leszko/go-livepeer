@@ -265,7 +265,7 @@ func TestSubscribeBlocks(t *testing.T) {
 	}
 
 	events := make(chan *big.Int, 10)
-	sub := tw.SubscribeBlocks(events)
+	sub := tw.SubscribeL1Blocks(events)
 	defer sub.Unsubscribe()
 
 	go tw.Watch()

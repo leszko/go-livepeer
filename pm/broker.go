@@ -79,7 +79,7 @@ type TimeManager interface {
 	// SubscribeRounds allows one to subscribe to new round events
 	SubscribeRounds(sink chan<- types.Log) event.Subscription
 	// SubscribeBlocks allows one to subscribe to newly seen block numbers
-	SubscribeBlocks(sink chan<- *big.Int) event.Subscription
+	SubscribeL1Blocks(sink chan<- *big.Int) event.Subscription
 }
 
 // SenderManager defines the methods for fetching sender information

@@ -297,7 +297,7 @@ func (m *stubTimeManager) SubscribeRounds(sink chan<- types.Log) event.Subscript
 	return m.roundSub
 }
 
-func (m *stubTimeManager) SubscribeBlocks(sink chan<- *big.Int) event.Subscription {
+func (m *stubTimeManager) SubscribeL1Blocks(sink chan<- *big.Int) event.Subscription {
 	m.blockNumSink = sink
 	m.blockNumSub = &stubSubscription{errCh: make(<-chan error)}
 	return m.blockNumSub

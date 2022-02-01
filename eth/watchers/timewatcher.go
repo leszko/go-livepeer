@@ -174,11 +174,11 @@ func (tw *TimeWatcher) SubscribeRounds(sink chan<- types.Log) event.Subscription
 	return tw.roundSubScope.Track(tw.roundSubFeed.Subscribe(sink))
 }
 
-// SubscribeBlocks allows one to subscribe to newly seen block numbers
+// SubscribeL1Blocks allows one to subscribe to newly seen L1 block numbers
 // To unsubscribe, simply call `Unsubscribe` on the returned subscription.
 // The sink channel should have ample buffer space to avoid blocking other subscribers.
 // Slow subscribers are not dropped.
-func (tw *TimeWatcher) SubscribeBlocks(sink chan<- *big.Int) event.Subscription {
+func (tw *TimeWatcher) SubscribeL1Blocks(sink chan<- *big.Int) event.Subscription {
 	return tw.l1BlockSubScope.Track(tw.l1BlockSubFeed.Subscribe(sink))
 }
 

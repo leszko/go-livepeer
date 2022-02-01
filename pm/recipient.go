@@ -356,7 +356,7 @@ func (r *recipient) EV() *big.Rat {
 
 func (r *recipient) senderNoncesCleanupLoop() {
 	sink := make(chan *big.Int, 10)
-	sub := r.tm.SubscribeBlocks(sink)
+	sub := r.tm.SubscribeL1Blocks(sink)
 	defer sub.Unsubscribe()
 	for {
 		select {

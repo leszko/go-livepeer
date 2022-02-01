@@ -92,7 +92,7 @@ func (q *ticketQueue) Length() (int, error) {
 // the ticket at the head of the queue and send it into q.redeemable which an external listener can use to receive redeemable tickets
 func (q *ticketQueue) startQueueLoop() {
 	blockNums := make(chan *big.Int, 10)
-	sub := q.tm.SubscribeBlocks(blockNums)
+	sub := q.tm.SubscribeL1Blocks(blockNums)
 	defer sub.Unsubscribe()
 
 ticketLoop:
