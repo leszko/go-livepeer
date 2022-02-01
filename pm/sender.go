@@ -154,9 +154,9 @@ func (s *sender) validateTicketParams(ticketParams *TicketParams, numTickets int
 		return nil
 	}
 
-	latestBlock := s.timeManager.LastSeenL1Block()
+	latestL1Block := s.timeManager.LastSeenL1Block()
 
-	currentBuffer := new(big.Int).Sub(ticketParams.ExpirationBlock, latestBlock).Int64()
+	currentBuffer := new(big.Int).Sub(ticketParams.ExpirationBlock, latestL1Block).Int64()
 	if currentBuffer <= paramsExpiryBuffer {
 		return ErrTicketParamsExpired
 	}
