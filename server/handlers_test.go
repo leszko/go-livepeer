@@ -124,21 +124,21 @@ func TestCurrentBlockHandler_LastSeenBlockError(t *testing.T) {
 	getter := &mockBlockGetter{}
 	handler := currentBlockHandler(getter)
 
-	getter.On("LastSeenL1Block").Return(nil, errors.New("LastSeenL1Block error"))
+	getter.On("LastSeenBlock").Return(nil, errors.New("LastSeenBlock error"))
 
 	resp := httpGetResp(handler)
 	body, _ := ioutil.ReadAll(resp.Body)
 
 	assert := assert.New(t)
 	assert.Equal(http.StatusInternalServerError, resp.StatusCode)
-	assert.Equal("could not query last seen block: LastSeenL1Block error", strings.TrimSpace(string(body)))
+	assert.Equal("could not query last seen block: LastSeenBlock error", strings.TrimSpace(string(body)))
 }
 
 func TestCurrentBlockHandler_Success(t *testing.T) {
 	getter := &mockBlockGetter{}
 	handler := currentBlockHandler(getter)
 
-	getter.On("LastSeenL1Block").Return(big.NewInt(50), nil)
+	getter.On("LastSeenBlock").Return(big.NewInt(50), nil)
 
 	resp := httpGetResp(handler)
 	body, _ := ioutil.ReadAll(resp.Body)

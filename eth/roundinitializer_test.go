@@ -167,14 +167,14 @@ func TestRoundInitializer_Start_Stop(t *testing.T) {
 	err := initializer.Start()
 	assert.EqualError(err, expErr.Error())
 
-	// CurrentRoundStartL1Block error
-	expErr = errors.New("CurrentRoundStartL1Block error")
+	// CurrentRoundStartBlock error
+	expErr = errors.New("CurrentRoundStartBlock error")
 	client.On("RoundLength").Return(big.NewInt(100), nil)
-	client.On("CurrentRoundStartL1Block").Return(nil, expErr).Once()
+	client.On("CurrentRoundStartBlock").Return(nil, expErr).Once()
 	err = initializer.Start()
 	assert.EqualError(err, expErr.Error())
 
-	client.On("CurrentRoundStartL1Block").Return(big.NewInt(5), nil)
+	client.On("CurrentRoundStartBlock").Return(big.NewInt(5), nil)
 	// test start and stop loop
 	errC := make(chan error)
 	go func() {
@@ -204,7 +204,7 @@ func TestRoundInitializer_RoundSubscription(t *testing.T) {
 	roundLength := big.NewInt(5)
 
 	client.On("RoundLength").Return(roundLength, nil)
-	client.On("CurrentRoundStartL1Block").Return(big.NewInt(5), nil)
+	client.On("CurrentRoundStartBlock").Return(big.NewInt(5), nil)
 
 	// test start and stop loop
 	errC := make(chan error)
@@ -244,7 +244,7 @@ func TestRoundInitializer_BlockSubscription(t *testing.T) {
 	roundLength := big.NewInt(5)
 
 	client.On("RoundLength").Return(roundLength, nil)
-	client.On("CurrentRoundStartL1Block").Return(big.NewInt(5), nil)
+	client.On("CurrentRoundStartBlock").Return(big.NewInt(5), nil)
 
 	// test start and stop loop
 	errC := make(chan error)
