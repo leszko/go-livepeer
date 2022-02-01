@@ -107,14 +107,36 @@ func (rc *RPCClient) HeaderByNumber(number *big.Int) (*MiniHeader, error) {
 func (rc *RPCClient) HeaderByHash(hash common.Hash) (*MiniHeader, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), rc.requestTimeout)
 	defer cancel()
-	header, err := rc.client.HeaderByHash(ctx, hash)
+
+	var header getBlockByNumberResponse
+	err := rc.rpcClient.CallContext(ctx, &header, "eth_getBlockByHash", hash, false)
 	if err != nil {
 		return nil, err
 	}
+
+	// If it returned an empty struct
+	if header.Number == "" {
+		return nil, ethereum.NotFound
+	}
+
+	// If no L1BlockNumber, then Livepeer is running on L1, so L1BlockNumber is the same as BlockNumber
+	if header.L1BlockNumber == "" {
+		header.L1BlockNumber = header.Number
+	}
+
+	blockNum, ok := math.ParseBig256(header.Number)
+	if !ok {
+		return nil, errors.New("Failed to parse big.Int value from hex-encoded block number returned from eth_getBlockByNumber")
+	}
+	l1BlockNum, ok := math.ParseBig256(header.L1BlockNumber)
+	if !ok {
+		return nil, errors.New("Failed to parse big.Int value from hex-encoded L1 block number returned from eth_getBlockByNumber")
+	}
 	miniHeader := &MiniHeader{
-		Hash:   header.Hash(),
-		Parent: header.ParentHash,
-		Number: header.Number,
+		Hash:          header.Hash,
+		Parent:        header.ParentHash,
+		Number:        blockNum,
+		L1BlockNumber: l1BlockNum,
 	}
 	return miniHeader, nil
 }
