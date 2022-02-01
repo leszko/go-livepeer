@@ -91,8 +91,8 @@ func (q *ticketQueue) Length() (int, error) {
 // is sufficient to cover the face value of the ticket at the head of the queue. If the max float is sufficient, we pop
 // the ticket at the head of the queue and send it into q.redeemable which an external listener can use to receive redeemable tickets
 func (q *ticketQueue) startQueueLoop() {
-	blockNums := make(chan *big.Int, 10)
-	sub := q.tm.SubscribeL1Blocks(blockNums)
+	l1BlockNums := make(chan *big.Int, 10)
+	sub := q.tm.SubscribeL1Blocks(l1BlockNums)
 	defer sub.Unsubscribe()
 
 ticketLoop:
@@ -100,9 +100,9 @@ ticketLoop:
 		select {
 		case err := <-sub.Err():
 			if err != nil {
-				glog.Errorf("Block subscription error err=%q", err)
+				glog.Errorf("L1 Block subscription error err=%q", err)
 			}
-		case latestBlock := <-blockNums:
+		case latestL1Block := <-l1BlockNums:
 			numTickets, err := q.Length()
 			if err != nil {
 				glog.Errorf("Error getting queue length err=%q", err)
@@ -118,7 +118,7 @@ ticketLoop:
 					continue ticketLoop
 				}
 
-				if nextTicket.ParamsExpirationBlock.Cmp(latestBlock) <= 0 {
+				if nextTicket.ParamsExpirationBlock.Cmp(latestL1Block) <= 0 {
 					resCh := make(chan struct {
 						txHash ethcommon.Hash
 						err    error
