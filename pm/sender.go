@@ -154,7 +154,7 @@ func (s *sender) validateTicketParams(ticketParams *TicketParams, numTickets int
 		return nil
 	}
 
-	latestBlock := s.timeManager.LastSeenBlock()
+	latestBlock := s.timeManager.LastSeenL1Block()
 
 	currentBuffer := new(big.Int).Sub(ticketParams.ExpirationBlock, latestBlock).Int64()
 	if currentBuffer <= paramsExpiryBuffer {
@@ -194,7 +194,7 @@ func (s *sender) validateTicketParams(ticketParams *TicketParams, numTickets int
 
 func (s *sender) expirationParams() *TicketExpirationParams {
 	round := s.timeManager.LastInitializedRound()
-	blkHash := s.timeManager.LastInitializedBlockHash()
+	blkHash := s.timeManager.LastInitializedL1BlockHash()
 
 	return &TicketExpirationParams{
 		CreationRound:          round.Int64(),

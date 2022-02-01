@@ -250,7 +250,7 @@ func (e *StubClient) BlockHashForRound(round *big.Int) ([32]byte, error) {
 func (e *StubClient) CurrentRoundInitialized() (bool, error) { return false, nil }
 func (e *StubClient) CurrentRoundLocked() (bool, error)      { return e.RoundLocked, e.RoundLockedErr }
 func (e *StubClient) CurrentRoundStartBlock() (*big.Int, error) {
-	return e.BlockNum, e.Errors["CurrentRoundStartBlock"]
+	return e.BlockNum, e.Errors["CurrentRoundStartL1Block"]
 }
 func (e *StubClient) Paused() (bool, error) { return false, nil }
 

@@ -167,14 +167,14 @@ func TestRoundInitializer_Start_Stop(t *testing.T) {
 	err := initializer.Start()
 	assert.EqualError(err, expErr.Error())
 
-	// CurrentRoundStartBlock error
-	expErr = errors.New("CurrentRoundStartBlock error")
+	// CurrentRoundStartL1Block error
+	expErr = errors.New("CurrentRoundStartL1Block error")
 	client.On("RoundLength").Return(big.NewInt(100), nil)
-	client.On("CurrentRoundStartBlock").Return(nil, expErr).Once()
+	client.On("CurrentRoundStartL1Block").Return(nil, expErr).Once()
 	err = initializer.Start()
 	assert.EqualError(err, expErr.Error())
 
-	client.On("CurrentRoundStartBlock").Return(big.NewInt(5), nil)
+	client.On("CurrentRoundStartL1Block").Return(big.NewInt(5), nil)
 	// test start and stop loop
 	errC := make(chan error)
 	go func() {
@@ -204,7 +204,7 @@ func TestRoundInitializer_RoundSubscription(t *testing.T) {
 	roundLength := big.NewInt(5)
 
 	client.On("RoundLength").Return(roundLength, nil)
-	client.On("CurrentRoundStartBlock").Return(big.NewInt(5), nil)
+	client.On("CurrentRoundStartL1Block").Return(big.NewInt(5), nil)
 
 	// test start and stop loop
 	errC := make(chan error)
@@ -244,7 +244,7 @@ func TestRoundInitializer_BlockSubscription(t *testing.T) {
 	roundLength := big.NewInt(5)
 
 	client.On("RoundLength").Return(roundLength, nil)
-	client.On("CurrentRoundStartBlock").Return(big.NewInt(5), nil)
+	client.On("CurrentRoundStartL1Block").Return(big.NewInt(5), nil)
 
 	// test start and stop loop
 	errC := make(chan error)
@@ -302,7 +302,7 @@ type stubTimeWatcher struct {
 	blockSub  event.Subscription
 }
 
-func (m *stubTimeWatcher) LastSeenBlock() *big.Int {
+func (m *stubTimeWatcher) LastSeenL1Block() *big.Int {
 	return m.lastBlock
 }
 
@@ -310,7 +310,7 @@ func (m *stubTimeWatcher) LastInitializedRound() *big.Int {
 	return m.lastInitializedRound
 }
 
-func (m *stubTimeWatcher) LastInitializedBlockHash() [32]byte {
+func (m *stubTimeWatcher) LastInitializedL1BlockHash() [32]byte {
 	return m.lastInitializedBlockHash
 }
 
@@ -318,7 +318,7 @@ func (m *stubTimeWatcher) GetTranscoderPoolSize() *big.Int {
 	return nil
 }
 
-func (m *stubTimeWatcher) CurrentRoundStartBlock() *big.Int {
+func (m *stubTimeWatcher) CurrentRoundStartL1Block() *big.Int {
 	return m.currentRoundStartBlock
 }
 

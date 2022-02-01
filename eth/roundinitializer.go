@@ -14,10 +14,10 @@ import (
 var epochBlocks = big.NewInt(5)
 
 type timeWatcher interface {
-	LastSeenBlock() *big.Int
+	LastSeenL1Block() *big.Int
 	LastInitializedRound() *big.Int
-	LastInitializedBlockHash() [32]byte
-	CurrentRoundStartBlock() *big.Int
+	LastInitializedL1BlockHash() [32]byte
+	CurrentRoundStartL1Block() *big.Int
 	SubscribeRounds(sink chan<- types.Log) event.Subscription
 	SubscribeBlocks(sink chan<- *big.Int) event.Subscription
 	GetTranscoderPoolSize() *big.Int
@@ -80,7 +80,7 @@ func (r *RoundInitializer) Start() error {
 				glog.Errorf("Round subscription error err=%q", err)
 			}
 		case <-roundSink:
-			r.nextRoundStartBlock = r.nextRoundStartBlock.Add(r.tw.CurrentRoundStartBlock(), roundLength)
+			r.nextRoundStartBlock = r.nextRoundStartBlock.Add(r.tw.CurrentRoundStartL1Block(), roundLength)
 		case block := <-blockSink:
 			if block.Cmp(r.nextRoundStartBlock) >= 0 {
 				if err := r.tryInitialize(); err != nil {
@@ -97,8 +97,8 @@ func (r *RoundInitializer) Stop() {
 }
 
 func (r *RoundInitializer) tryInitialize() error {
-	currentBlk := r.tw.LastSeenBlock()
-	lastInitializedBlkHash := r.tw.LastInitializedBlockHash()
+	currentBlk := r.tw.LastSeenL1Block()
+	lastInitializedBlkHash := r.tw.LastInitializedL1BlockHash()
 
 	epochSeed := r.currentEpochSeed(currentBlk, r.nextRoundStartBlock, lastInitializedBlkHash)
 

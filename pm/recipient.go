@@ -166,7 +166,7 @@ func (r *recipient) ReceiveTicket(ticket *Ticket, sig []byte, seed *big.Int) (st
 	}
 
 	// check advertised params aren't expired
-	latestBlock := r.tm.LastSeenBlock()
+	latestBlock := r.tm.LastSeenL1Block()
 	if ticket.ParamsExpirationBlock.Cmp(latestBlock) <= 0 {
 		return sessionID, won, ErrTicketParamsExpired
 	}
@@ -196,14 +196,14 @@ func (r *recipient) TicketParams(sender ethcommon.Address, price *big.Rat) (*Tic
 		}
 	}
 
-	lastBlock := r.tm.LastSeenBlock()
+	lastBlock := r.tm.LastSeenL1Block()
 	expirationBlock := new(big.Int).Add(lastBlock, paramsExpirationBlock)
 
 	winProb := r.winProb(faceValue)
 
 	ticketExpirationParams := &TicketExpirationParams{
 		CreationRound:          r.tm.LastInitializedRound().Int64(),
-		CreationRoundBlockHash: r.tm.LastInitializedBlockHash(),
+		CreationRoundBlockHash: r.tm.LastInitializedL1BlockHash(),
 	}
 
 	recipientRand := r.rand(seed, sender, faceValue, winProb, expirationBlock, price, ticketExpirationParams)
