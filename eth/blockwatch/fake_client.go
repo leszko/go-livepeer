@@ -65,6 +65,14 @@ func (fc *fakeClient) HeaderByNumber(number *big.Int) (*MiniHeader, error) {
 // HeaderByHash fetches a block header by its block hash. If no block exists with this number it will return
 // a `ethereum.NotFound` error.
 func (fc *fakeClient) HeaderByHash(hash common.Hash) (*MiniHeader, error) {
+	// predefined block
+	if hash.String() == "0x6bbf9b6e836207ab25379c20e517a89090cbbaf8877746f6ed7fb6820770816b" {
+		return &MiniHeader{
+			Hash:   common.HexToHash("0x6bbf9b6e836207ab25379c20e517a89090cbbaf8877746f6ed7fb6820770816b"),
+			Number: big.NewInt(30),
+		}, nil
+	}
+
 	fc.fixtureMut.Lock()
 	defer fc.fixtureMut.Unlock()
 	timestep := fc.fixtureData[fc.currentTimestep]
