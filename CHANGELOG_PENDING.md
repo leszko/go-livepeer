@@ -11,6 +11,7 @@
 
 - \#2216 Fix Accept Multiline message on Windows (@leszko)
 - \#2218 Display http status codes in livepeer_cli (@noisersup)
+- \#2222 Use L1 block number for Ticket Parameters and Round Initialization (@leszko)
 
 #### Broadcaster
 
