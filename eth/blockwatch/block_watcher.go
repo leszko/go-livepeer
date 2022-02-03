@@ -395,7 +395,7 @@ func (w *Watcher) getMissedEventsToBackfill(ctx context.Context) ([]*Event, erro
 					Number: big.NewInt(0).SetUint64(log.BlockNumber),
 					Logs:   []types.Log{},
 				}
-				// TODO: Consider extracting L1 block number directly from logs if possible
+				// Logs don't contain L1 block number, so we need to fetch it separately
 				blockHeader, err = w.enrichWithL1BlockNumber(blockHeader)
 				if err != nil {
 					return events, err
