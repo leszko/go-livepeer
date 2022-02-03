@@ -97,7 +97,7 @@ func (w *Watcher) BackfillEventsIfNeeded(ctx context.Context) error {
 		return err
 	}
 	if len(events) > 0 {
-		w.blockFeed.Send(events)
+		w.blockFeed.Send(w.enrichWithL1(events))
 	}
 	return nil
 }
@@ -206,12 +206,34 @@ func (w *Watcher) pollNextBlock() error {
 	// Even if an error occurred, we still want to emit the events gathered since we might have
 	// popped blocks off the Stack and they won't be re-added
 	if len(events) != 0 {
-		w.blockFeed.Send(events)
+		w.blockFeed.Send(w.enrichWithL1(events))
 	}
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+// Add L1 Block Number to the event with the highest block number
+func (w *Watcher) enrichWithL1(events []*Event) []*Event {
+	if len(events) == 0 {
+		return events
+	}
+
+	max := 0
+	for i, e := range events {
+		if events[max].BlockHeader.Number.Cmp(e.BlockHeader.Number) >= 0 {
+			max = i
+		}
+	}
+
+	block, err := w.enrichWithL1BlockNumber(events[max].BlockHeader)
+	if err != nil {
+		glog.Errorf("Cannot fetch L1 block number for block number %d err=%q", events[max].BlockHeader.Number, err)
+	}
+
+	events[max].BlockHeader = block
+	return events
 }
 
 func (w *Watcher) buildCanonicalChain(nextHeader *MiniHeader, events []*Event) ([]*Event, error) {
@@ -248,7 +270,6 @@ func (w *Watcher) buildCanonicalChain(nextHeader *MiniHeader, events []*Event) (
 	if _, err := w.stack.Pop(); err != nil {
 		return events, err
 	}
-	latestHeader, err = w.enrichWithL1BlockNumber(latestHeader)
 	if err != nil {
 		return events, err
 	}
@@ -395,8 +416,6 @@ func (w *Watcher) getMissedEventsToBackfill(ctx context.Context) ([]*Event, erro
 					Number: big.NewInt(0).SetUint64(log.BlockNumber),
 					Logs:   []types.Log{},
 				}
-				// Logs don't contain L1 block number, so we need to fetch it separately
-				blockHeader, err = w.enrichWithL1BlockNumber(blockHeader)
 				if err != nil {
 					return events, err
 				}

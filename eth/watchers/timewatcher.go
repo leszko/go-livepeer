@@ -206,7 +206,7 @@ func (tw *TimeWatcher) handleBlockEvents(events []*blockwatch.Event) {
 func (tw *TimeWatcher) handleL1BlockNum(event *blockwatch.Event) {
 	last := tw.LastSeenL1Block()
 	new := event.BlockHeader.L1BlockNumber
-	if last == nil || last.Cmp(new) != 0 {
+	if new != nil && (last == nil || last.Cmp(new) != 0) {
 		tw.setLastSeenL1Block(new)
 		tw.l1BlockSubFeed.Send(new)
 	}
