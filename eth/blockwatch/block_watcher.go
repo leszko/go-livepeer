@@ -42,32 +42,32 @@ type Event struct {
 
 // Config holds some configuration options for an instance of BlockWatcher.
 type Config struct {
-	Store               MiniHeaderStore
-	PollingInterval     time.Duration
-	StartBlockDepth     rpc.BlockNumber
-	BackfillStartBlock  *big.Int
-	BlockRetentionLimit int
-	WithLogs            bool
-	Topics              []common.Hash
-	Client              Client
+	Store                    MiniHeaderStore
+	PollingInterval          time.Duration
+	StartBlockDepth          rpc.BlockNumber
+	CurrentRoundStartL1Block *big.Int
+	BlockRetentionLimit      int
+	WithLogs                 bool
+	Topics                   []common.Hash
+	Client                   Client
 }
 
 // Watcher maintains a consistent representation of the latest `blockRetentionLimit` blocks,
 // handling block re-orgs and network disruptions gracefully. It can be started from any arbitrary
 // block height, and will emit both block added and removed events.
 type Watcher struct {
-	blockRetentionLimit int
-	startBlockDepth     rpc.BlockNumber
-	backfillStartBlock  *big.Int
-	stack               *Stack
-	client              Client
-	blockFeed           event.Feed
-	blockScope          event.SubscriptionScope // Subscription scope tracking current live listeners
-	wasStartedOnce      bool                    // Whether the block watcher has previously been started
-	pollingInterval     time.Duration
-	ticker              *time.Ticker
-	withLogs            bool
-	topics              []common.Hash
+	blockRetentionLimit      int
+	startBlockDepth          rpc.BlockNumber
+	currentRoundStartL1Block *big.Int
+	stack                    *Stack
+	client                   Client
+	blockFeed                event.Feed
+	blockScope               event.SubscriptionScope // Subscription scope tracking current live listeners
+	wasStartedOnce           bool                    // Whether the block watcher has previously been started
+	pollingInterval          time.Duration
+	ticker                   *time.Ticker
+	withLogs                 bool
+	topics                   []common.Hash
 	sync.RWMutex
 }
 
@@ -76,14 +76,14 @@ func New(config Config) *Watcher {
 	stack := NewStack(config.Store, config.BlockRetentionLimit)
 
 	bs := &Watcher{
-		pollingInterval:     config.PollingInterval,
-		blockRetentionLimit: config.BlockRetentionLimit,
-		startBlockDepth:     config.StartBlockDepth,
-		backfillStartBlock:  config.BackfillStartBlock,
-		stack:               stack,
-		client:              config.Client,
-		withLogs:            config.WithLogs,
-		topics:              config.Topics,
+		pollingInterval:          config.PollingInterval,
+		blockRetentionLimit:      config.BlockRetentionLimit,
+		startBlockDepth:          config.StartBlockDepth,
+		currentRoundStartL1Block: config.CurrentRoundStartL1Block,
+		stack:                    stack,
+		client:                   config.Client,
+		withLogs:                 config.WithLogs,
+		topics:                   config.Topics,
 	}
 	return bs
 }
@@ -344,22 +344,23 @@ func (w *Watcher) getMissedEventsToBackfill(ctx context.Context) ([]*Event, erro
 		blocksElapsed          int
 	)
 
-	latestRetainedBlock, err := w.stack.Peek()
-	if err != nil {
-		return events, err
-	}
-
 	latestBlock, err := w.client.HeaderByNumber(nil)
 	if err != nil {
 		return events, err
 	}
 	latestBlockNum := int(latestBlock.Number.Int64())
 
-	if w.backfillStartBlock != nil {
-		startBlockNum = int(w.backfillStartBlock.Int64())
-	} else if latestRetainedBlock != nil {
-		latestRetainedBlockNum = int(latestRetainedBlock.Number.Int64())
-		// Events for latestRetainedBlock already processed, start at latestRetainedBlock + 1
+	lastSeenBlock, err := w.stack.Peek()
+	if err != nil {
+		return events, err
+	}
+
+	currentRoundStartL2Block := w.currentRoundStartBlock(lastSeenBlock)
+	if currentRoundStartL2Block != nil {
+		startBlockNum = int(currentRoundStartL2Block.Int64())
+	} else if lastSeenBlock != nil {
+		latestRetainedBlockNum = int(lastSeenBlock.Number.Int64())
+		// Events for lastSeenBlock already processed, start at lastSeenBlock + 1
 		startBlockNum = latestRetainedBlockNum + 1
 	} else {
 		return events, nil
@@ -374,7 +375,7 @@ func (w *Watcher) getMissedEventsToBackfill(ctx context.Context) ([]*Event, erro
 
 	logs, furthestBlockProcessed := w.getLogsInBlockRange(ctx, startBlockNum, latestBlockNum)
 	if furthestBlockProcessed > latestRetainedBlockNum {
-		// If we have processed blocks further then the latestRetainedBlock in the DB, we
+		// If we have processed blocks further then the lastSeenBlock in the DB, we
 		// want to remove all blocks from the DB and insert the furthestBlockProcessed
 		// Doing so will cause the BlockWatcher to start from that furthestBlockProcessed.
 		headers, err := w.InspectRetainedBlocks()
@@ -646,6 +647,60 @@ func (w *Watcher) enrichWithL1BlockNumber(header *MiniHeader) (*MiniHeader, erro
 		return header, nil
 	}
 	return w.client.HeaderByHash(header.Hash)
+}
+
+// Finds min current round start L2 block in between lastSeenBlock L2 block and currentRoundStartL1Block L1 Block
+func (w *Watcher) currentRoundStartBlock(lastSeenBlock *MiniHeader) *big.Int {
+	lastSeenBlock, err := w.enrichWithL1BlockNumber(lastSeenBlock)
+	if err != nil {
+		return nil
+	}
+	if w.currentRoundStartL1Block.Cmp(lastSeenBlock.L1BlockNumber) <= 0 {
+		return lastSeenBlock.Number
+	}
+
+	currentBlock, err := w.client.HeaderByNumber(nil)
+	if err != nil {
+		return nil
+	}
+
+	// binary search to find the an L2 block for the current round start L1 block
+	left := lastSeenBlock.Number
+	right := currentBlock.Number
+	var foundBlock *MiniHeader
+	for {
+		middle := new(big.Int).Div(new(big.Int).Add(left, right), big.NewInt(2))
+		middleBlock, err := w.client.HeaderByNumber(middle)
+		if err != nil {
+			return nil
+		}
+		cmp := middleBlock.L1BlockNumber.Cmp(w.currentRoundStartL1Block)
+		if cmp == 0 {
+			foundBlock = middleBlock
+			break
+		} else if cmp < 0 {
+			left = middleBlock.Number
+		} else {
+			right = middleBlock.Number
+		}
+	}
+
+	// find the min L2 block
+	// TODO: This could probably be also a b search
+	for {
+		prev := new(big.Int).Sub(foundBlock.Number, big.NewInt(1))
+		prevBlock, err := w.client.HeaderByNumber(prev)
+		if err != nil {
+			return nil
+		}
+		if prevBlock.L1BlockNumber.Cmp(foundBlock.L1BlockNumber) < 0 {
+			break
+		} else {
+			foundBlock = prevBlock
+		}
+	}
+
+	return foundBlock.Number
 }
 
 func isUnknownBlockErr(err error) bool {
