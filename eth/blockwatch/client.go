@@ -96,7 +96,7 @@ func (rc *RPCClient) callEth(method string, arg interface{}) (*MiniHeader, error
 	}
 	l1BlockNum, ok := math.ParseBig256(header.L1BlockNumber)
 	if !ok {
-		return nil, errors.New("Failed to parse big.Int value from hex-encoded L1 block number returned from eth_getBlockByNumber")
+		return nil, fmt.Errorf("Failed to parse big.Int value from hex-encoded L1 block number returned from %v", method)
 	}
 	miniHeader := &MiniHeader{
 		Hash:          header.Hash,
