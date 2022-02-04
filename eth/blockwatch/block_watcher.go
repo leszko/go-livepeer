@@ -214,28 +214,6 @@ func (w *Watcher) pollNextBlock() error {
 	return nil
 }
 
-// Add L1 Block Number to the event with the highest block number
-func (w *Watcher) enrichWithL1(events []*Event) []*Event {
-	if len(events) == 0 {
-		return events
-	}
-
-	max := 0
-	for i, e := range events {
-		if events[max].BlockHeader.Number.Cmp(e.BlockHeader.Number) >= 0 {
-			max = i
-		}
-	}
-
-	block, err := w.enrichWithL1BlockNumber(events[max].BlockHeader)
-	if err != nil {
-		glog.Errorf("Cannot fetch L1 block number for block number %d err=%q", events[max].BlockHeader.Number, err)
-	}
-
-	events[max].BlockHeader = block
-	return events
-}
-
 func (w *Watcher) buildCanonicalChain(nextHeader *MiniHeader, events []*Event) ([]*Event, error) {
 	latestHeader, err := w.stack.Peek()
 	if err != nil {
@@ -639,6 +617,31 @@ func (w *Watcher) filterLogsRecursively(from, to int, allLogs []types.Log) ([]ty
 	}
 	allLogs = append(allLogs, logs...)
 	return allLogs, nil
+}
+
+// enrichWithL1 adds L1 block number to the event with the highest block number.
+//
+// Adding L1 block number to an event requires an RPC call and the only code using L1 block number is TimeWatcher that
+// is interested only in the highest L1 block number, not in all of them.
+func (w *Watcher) enrichWithL1(events []*Event) []*Event {
+	if len(events) == 0 {
+		return events
+	}
+
+	max := 0
+	for i, e := range events {
+		if events[max].BlockHeader.Number.Cmp(e.BlockHeader.Number) <= 0 {
+			max = i
+		}
+	}
+
+	block, err := w.enrichWithL1BlockNumber(events[max].BlockHeader)
+	if err != nil {
+		glog.Errorf("Cannot fetch L1 block number for block number %d err=%q", events[max].BlockHeader.Number, err)
+	}
+
+	events[max].BlockHeader = block
+	return events
 }
 
 func (w *Watcher) enrichWithL1BlockNumber(header *MiniHeader) (*MiniHeader, error) {
