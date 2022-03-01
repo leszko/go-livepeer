@@ -63,3 +63,51 @@ func TestIntegration(t *testing.T) {
 	//	t.Fatalf("Expected status code %d. Got %d.", http.StatusOK, resp.StatusCode)
 	//}
 }
+
+func TestCompleteStreamingWorkflow(t *testing.T) {
+	// given
+	startOrchestrator()
+	registerOrchestrator()
+	startBroadcaster()
+	fundDepositAndReserve()
+
+	// when
+	startStream()
+
+	// then
+	checkStreamIsTranscoded()
+	checkTicketIsReceivedByOrchestrator()
+	checkTicketIsRedeemed()
+}
+
+func checkTicketIsRedeemed() {
+
+}
+
+func checkTicketIsReceivedByOrchestrator() {
+
+}
+
+func checkStreamIsTranscoded() {
+
+}
+
+func startStream() {
+
+}
+
+func fundDepositAndReserve() {
+
+}
+
+func startBroadcaster() {
+
+}
+
+func registerOrchestrator() {
+
+}
+
+func startOrchestrator() {
+
+}
