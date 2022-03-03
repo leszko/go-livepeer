@@ -21,7 +21,7 @@ type gethContainer struct {
 
 func setupGeth(ctx context.Context, t *testing.T) *gethContainer {
 	req := testcontainers.ContainerRequest{
-		Image:        "leszko/geth-with-livepeer-protocol:streamflow",
+		Image:        "livepeer/geth-with-livepeer-protocol:streamflow",
 		ExposedPorts: []string{"8546/tcp", "8545/tcp"},
 		// TODO: Add geth health check
 		//WaitingFor:   wait.ForHTTP("/"),
