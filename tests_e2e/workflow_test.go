@@ -60,7 +60,7 @@ func TestCompleteStreamingWorkflow(t *testing.T) {
 
 	orch := startOrchestrator(ethClient)
 	registerOrchestrator()
-	startBroadcaster()
+	startBroadcaster(ethClient)
 	fundDepositAndReserve()
 
 	// when
@@ -104,16 +104,16 @@ func startOrchestrator(ethClient eth.LivepeerEthClient) *server.LivepeerServer {
 	return s
 }
 
-func checkTicketIsRedeemed() {
+func registerOrchestrator() {
 	// TODO
 }
 
-func checkTicketIsReceivedByOrchestrator() {
-	// TODO
-
+func startBroadcaster(ethClient eth.LivepeerEthClient) *server.LivepeerServer {
+	// TODO: Start Livepeer in the Broadcaster mode
+	return nil
 }
 
-func checkStreamIsTranscoded() {
+func fundDepositAndReserve() {
 	// TODO
 }
 
@@ -121,14 +121,14 @@ func startStream(orch *server.LivepeerServer) {
 	// TODO
 }
 
-func fundDepositAndReserve() {
+func checkStreamIsTranscoded() {
 	// TODO
 }
 
-func startBroadcaster() {
+func checkTicketIsReceivedByOrchestrator() {
 	// TODO
 }
 
-func registerOrchestrator() {
-	// TODOs
+func checkTicketIsRedeemed() {
+	// TODO
 }
