@@ -2,6 +2,7 @@ package monitor
 
 import (
 	"context"
+	"fmt"
 	"math/big"
 	"net"
 	"runtime"
@@ -80,7 +81,7 @@ var timeToWaitForError = 8500 * time.Millisecond
 var timeoutWatcherPause = 15 * time.Second
 
 type (
-	censusMetricsCounter struct {
+	CensusMetricsCounter struct {
 		nodeType                      NodeType
 		nodeID                        string
 		ctx                           context.Context
@@ -205,13 +206,13 @@ type (
 // Exporter Prometheus exporter that handles `/metrics` endpoint
 var Exporter *prometheus.Exporter
 
-var census censusMetricsCounter
+var census CensusMetricsCounter
 
 // used in unit tests
 var unitTestMode bool
 
 func InitCensus(nodeType NodeType, version string) {
-	census = censusMetricsCounter{
+	census = CensusMetricsCounter{
 		emergeTimes: make(map[uint64]map[uint64]time.Time),
 		nodeID:      NodeID,
 		nodeType:    nodeType,
@@ -916,7 +917,7 @@ func LogDiscoveryError(ctx context.Context, uri, code string) {
 	}
 }
 
-func (cen *censusMetricsCounter) successRate() float64 {
+func (cen *CensusMetricsCounter) successRate() float64 {
 	var i int
 	var f float64
 	if len(cen.success) == 0 {
@@ -1037,7 +1038,7 @@ func (sa *segmentsAverager) canBeRemoved() bool {
 	return true
 }
 
-func (cen *censusMetricsCounter) timeoutWatcher(ctx context.Context) {
+func (cen *CensusMetricsCounter) timeoutWatcher(ctx context.Context) {
 	for {
 		cen.lock.Lock()
 		now := time.Now()
@@ -1147,7 +1148,7 @@ func SegmentEmerged(ctx context.Context, nonce, seqNo uint64, profilesNum int, d
 	}
 }
 
-func (cen *censusMetricsCounter) segmentEmerged(nonce, seqNo uint64, profilesNum int) {
+func (cen *CensusMetricsCounter) segmentEmerged(nonce, seqNo uint64, profilesNum int) {
 	cen.lock.Lock()
 	defer cen.lock.Unlock()
 	if _, has := cen.emergeTimes[nonce]; !has {
@@ -1164,7 +1165,7 @@ func SourceSegmentAppeared(ctx context.Context, nonce, seqNo uint64, manifestID,
 	census.segmentSourceAppeared(ctx, nonce, seqNo, profile, recordingEnabled)
 }
 
-func (cen *censusMetricsCounter) segmentSourceAppeared(ctx context.Context, nonce, seqNo uint64, profile string, recordingEnabled bool) {
+func (cen *CensusMetricsCounter) segmentSourceAppeared(ctx context.Context, nonce, seqNo uint64, profile string, recordingEnabled bool) {
 	segType := segTypeRegular
 	if recordingEnabled {
 		segType = segTypeRec
@@ -1250,7 +1251,7 @@ func AuthWebhookFinished(dur time.Duration) {
 	census.authWebhookFinished(dur)
 }
 
-func (cen *censusMetricsCounter) authWebhookFinished(dur time.Duration) {
+func (cen *CensusMetricsCounter) authWebhookFinished(dur time.Duration) {
 	stats.Record(cen.ctx, cen.mAuthWebhookTime.M(float64(dur)/float64(time.Millisecond)))
 }
 
@@ -1276,7 +1277,7 @@ func SegmentUploadFailed(ctx context.Context, nonce, seqNo uint64, code SegmentU
 	census.segmentUploadFailed(ctx, nonce, seqNo, code, permanent, uri)
 }
 
-func (cen *censusMetricsCounter) segmentUploadFailed(ctx context.Context, nonce, seqNo uint64, code SegmentUploadError, permanent bool,
+func (cen *CensusMetricsCounter) segmentUploadFailed(ctx context.Context, nonce, seqNo uint64, code SegmentUploadError, permanent bool,
 	uri string) {
 
 	cen.lock.Lock()
@@ -1304,7 +1305,7 @@ func SegmentTranscoded(ctx context.Context, nonce, seqNo uint64, sourceDur time.
 	census.segmentTranscoded(nonce, seqNo, sourceDur, transcodeDur, profiles, trusted, verified)
 }
 
-func (cen *censusMetricsCounter) segmentTranscoded(nonce, seqNo uint64, sourceDur time.Duration, transcodeDur time.Duration,
+func (cen *CensusMetricsCounter) segmentTranscoded(nonce, seqNo uint64, sourceDur time.Duration, transcodeDur time.Duration,
 	profiles string, trusted, verified bool) {
 
 	cen.lock.Lock()
@@ -1330,7 +1331,7 @@ func SegmentTranscodeFailed(ctx context.Context, subType SegmentTranscodeError, 
 	census.segmentTranscodeFailed(ctx, nonce, seqNo, subType, permanent)
 }
 
-func (cen *censusMetricsCounter) segmentTranscodeFailed(ctx context.Context, nonce, seqNo uint64, code SegmentTranscodeError, permanent bool) {
+func (cen *CensusMetricsCounter) segmentTranscodeFailed(ctx context.Context, nonce, seqNo uint64, code SegmentTranscodeError, permanent bool) {
 	cen.lock.Lock()
 	defer cen.lock.Unlock()
 	if err := stats.RecordWithTags(census.ctx,
@@ -1345,13 +1346,13 @@ func (cen *censusMetricsCounter) segmentTranscodeFailed(ctx context.Context, non
 	}
 }
 
-func (cen *censusMetricsCounter) countSegmentTranscoded(nonce, seqNo uint64, failed bool) {
+func (cen *CensusMetricsCounter) countSegmentTranscoded(nonce, seqNo uint64, failed bool) {
 	if avg, ok := cen.success[nonce]; ok {
 		avg.addTranscoded(seqNo, failed)
 	}
 }
 
-func (cen *censusMetricsCounter) countSegmentEmerged(ctx context.Context, nonce, seqNo uint64) {
+func (cen *CensusMetricsCounter) countSegmentEmerged(ctx context.Context, nonce, seqNo uint64) {
 	if _, ok := cen.emergeTimes[nonce][seqNo]; ok {
 		if err := stats.RecordWithTags(cen.ctx,
 			manifestIDTag(ctx), cen.mSegmentEmerged.M(1)); err != nil {
@@ -1361,7 +1362,7 @@ func (cen *censusMetricsCounter) countSegmentEmerged(ctx context.Context, nonce,
 	}
 }
 
-func (cen *censusMetricsCounter) sendSuccess() {
+func (cen *CensusMetricsCounter) sendSuccess() {
 	stats.Record(cen.ctx, cen.mSuccessRate.M(cen.successRate()))
 }
 
@@ -1436,7 +1437,7 @@ func StreamCreated(manifestID string, nonce uint64) {
 	census.streamCreated(manifestID, nonce)
 }
 
-func (cen *censusMetricsCounter) streamCreated(manifestID string, nonce uint64) {
+func (cen *CensusMetricsCounter) streamCreated(manifestID string, nonce uint64) {
 	cen.lock.Lock()
 	defer cen.lock.Unlock()
 	stats.Record(cen.ctx, cen.mStreamCreated.M(1))
@@ -1448,7 +1449,7 @@ func StreamStarted(nonce uint64) {
 	census.streamStarted(nonce)
 }
 
-func (cen *censusMetricsCounter) streamStarted(nonce uint64) {
+func (cen *CensusMetricsCounter) streamStarted(nonce uint64) {
 	stats.Record(cen.ctx, cen.mStreamStarted.M(1))
 }
 
@@ -1457,7 +1458,7 @@ func StreamEnded(ctx context.Context, nonce uint64) {
 	census.streamEnded(nonce)
 }
 
-func (cen *censusMetricsCounter) streamEnded(nonce uint64) {
+func (cen *CensusMetricsCounter) streamEnded(nonce uint64) {
 	cen.lock.Lock()
 	defer cen.lock.Unlock()
 	stats.Record(cen.ctx, cen.mStreamEnded.M(1))
@@ -1680,4 +1681,142 @@ func FastVerificationFailed(ctx context.Context) {
 		manifestIDTag(ctx), census.mFastVerificationFailed.M(1)); err != nil {
 		clog.Errorf(ctx, "Error recording metrics err=%q", err)
 	}
+}
+
+func PrintMetricsMarkdown() {
+	fmt.Println("## Livepeer metrics\n")
+	fmt.Println("### General")
+	printHeader()
+	printMetric("versions", "Version information.", "Num")
+	printMetric(census.mSegmentSourceAppeared.Name(), census.mSegmentSourceAppeared.Description(), census.mSegmentSourceAppeared.Unit())
+	printMetric(census.mSegmentEmerged.Name(), census.mSegmentEmerged.Description(), census.mSegmentEmerged.Unit())
+	printMetric(census.mSegmentEmergedUnprocessed.Name(), census.mSegmentEmergedUnprocessed.Description(), census.mSegmentEmergedUnprocessed.Unit())
+	printMetric(census.mSegmentUploaded.Name(), census.mSegmentUploaded.Description(), census.mSegmentUploaded.Unit())
+	printMetric(census.mSegmentUploadFailed.Name(), census.mSegmentUploadFailed.Description(), census.mSegmentUploadFailed.Unit())
+	printMetric(census.mSegmentDownloaded.Name(), census.mSegmentDownloaded.Description(), census.mSegmentDownloaded.Unit())
+	printMetric(census.mSegmentTranscoded.Name(), census.mSegmentTranscoded.Description(), census.mSegmentTranscoded.Unit())
+	printMetric(census.mSegmentTranscodedUnprocessed.Name(), census.mSegmentTranscodedUnprocessed.Description(), census.mSegmentTranscodedUnprocessed.Unit())
+	printMetric(census.mSegmentTranscodeFailed.Name(), census.mSegmentTranscodeFailed.Description(), census.mSegmentTranscodeFailed.Unit())
+	printMetric(census.mSegmentTranscodedAppeared.Name(), census.mSegmentTranscodedAppeared.Description(), census.mSegmentTranscodedAppeared.Unit())
+	printMetric(census.mSegmentTranscodedAllAppeared.Name(), census.mSegmentTranscodedAllAppeared.Description(), census.mSegmentTranscodedAllAppeared.Unit())
+	printMetric(census.mStartBroadcastClientFailed.Name(), census.mStartBroadcastClientFailed.Description(), census.mStartBroadcastClientFailed.Unit())
+	printMetric(census.mStreamCreateFailed.Name(), census.mStreamCreateFailed.Description(), census.mStreamCreateFailed.Unit())
+	printMetric(census.mStreamCreated.Name(), census.mStreamCreated.Description(), census.mStreamCreated.Unit())
+	printMetric(census.mStreamStarted.Name(), census.mStreamStarted.Description(), census.mStreamStarted.Unit())
+	printMetric(census.mStreamEnded.Name(), census.mStreamEnded.Description(), census.mStreamEnded.Unit())
+	printMetric(census.mMaxSessions.Name(), census.mMaxSessions.Description(), census.mMaxSessions.Unit())
+	printMetric(census.mCurrentSessions.Name(), census.mCurrentSessions.Description(), census.mCurrentSessions.Unit())
+	printMetric(census.mDiscoveryError.Name(), census.mDiscoveryError.Description(), census.mDiscoveryError.Unit())
+	printMetric(census.mTranscodeRetried.Name(), census.mTranscodeRetried.Description(), census.mTranscodeRetried.Unit())
+	printMetric(census.mTranscodersNumber.Name(), census.mTranscodersNumber.Description(), census.mTranscodersNumber.Unit())
+	printMetric(census.mTranscodersCapacity.Name(), census.mTranscodersCapacity.Description(), census.mTranscodersCapacity.Unit())
+	printMetric(census.mTranscodersLoad.Name(), census.mTranscodersLoad.Description(), census.mTranscodersLoad.Unit())
+	printMetric(census.mSuccessRate.Name(), census.mSuccessRate.Description(), census.mSuccessRate.Unit())
+	printMetric(census.mSuccessRatePerStream.Name(), census.mSuccessRatePerStream.Description(), census.mSuccessRatePerStream.Unit())
+	printMetric(census.mTranscodeTime.Name(), census.mTranscodeTime.Description(), census.mTranscodeTime.Unit())
+	printMetric(census.mTranscodeLatency.Name(), census.mTranscodeLatency.Description(), census.mTranscodeLatency.Unit())
+	printMetric(census.mTranscodeOverallLatency.Name(), census.mTranscodeOverallLatency.Description(), census.mTranscodeOverallLatency.Unit())
+	printMetric(census.mUploadTime.Name(), census.mUploadTime.Description(), census.mUploadTime.Unit())
+	printMetric(census.mDownloadTime.Name(), census.mDownloadTime.Description(), census.mDownloadTime.Unit())
+	printMetric(census.mAuthWebhookTime.Name(), census.mAuthWebhookTime.Description(), census.mAuthWebhookTime.Unit())
+	printMetric(census.mSourceSegmentDuration.Name(), census.mSourceSegmentDuration.Description(), census.mSourceSegmentDuration.Unit())
+	printMetric(census.mHTTPClientTimeout1.Name(), census.mHTTPClientTimeout1.Description(), census.mHTTPClientTimeout1.Unit())
+	printMetric(census.mHTTPClientTimeout2.Name(), census.mHTTPClientTimeout2.Description(), census.mHTTPClientTimeout2.Unit())
+	printMetric(census.mRealtimeRatio.Name(), census.mRealtimeRatio.Description(), census.mRealtimeRatio.Unit())
+	printMetric(census.mRealtime3x.Name(), census.mRealtime3x.Description(), census.mRealtime3x.Unit())
+	printMetric(census.mRealtime2x.Name(), census.mRealtime2x.Description(), census.mRealtime2x.Unit())
+	printMetric(census.mRealtime1x.Name(), census.mRealtime1x.Description(), census.mRealtime1x.Unit())
+	printMetric(census.mRealtimeHalf.Name(), census.mRealtimeHalf.Description(), census.mRealtimeHalf.Unit())
+	printMetric(census.mRealtimeSlow.Name(), census.mRealtimeSlow.Description(), census.mRealtimeSlow.Unit())
+	printMetric(census.mTranscodeScore.Name(), census.mTranscodeScore.Description(), census.mTranscodeScore.Unit())
+	printMetric(census.mRecordingSaveLatency.Name(), census.mRecordingSaveLatency.Description(), census.mRecordingSaveLatency.Unit())
+	printMetric(census.mRecordingSaveErrors.Name(), census.mRecordingSaveErrors.Description(), census.mRecordingSaveErrors.Unit())
+	printMetric(census.mRecordingSavedSegments.Name(), census.mRecordingSavedSegments.Description(), census.mRecordingSavedSegments.Unit())
+	printMetric(census.mOrchestratorSwaps.Name(), census.mOrchestratorSwaps.Description(), census.mOrchestratorSwaps.Unit())
+
+	fmt.Println("### Sending payments")
+	printHeader()
+	printMetric(census.mTicketValueSent.Name(), census.mTicketValueSent.Description(), census.mTicketValueSent.Unit())
+	printMetric(census.mTicketsSent.Name(), census.mTicketsSent.Description(), census.mTicketsSent.Unit())
+	printMetric(census.mPaymentCreateError.Name(), census.mPaymentCreateError.Description(), census.mPaymentCreateError.Unit())
+	printMetric(census.mDeposit.Name(), census.mDeposit.Description(), census.mDeposit.Unit())
+	printMetric(census.mReserve.Name(), census.mReserve.Description(), census.mReserve.Unit())
+	printMetric(census.mMaxTranscodingPrice.Name(), census.mMaxTranscodingPrice.Description(), census.mMaxTranscodingPrice.Unit())
+
+	fmt.Println("### Receiving payments")
+	printHeader()
+	printMetric(census.mTicketValueRecv.Name(), census.mTicketValueRecv.Description(), census.mTicketValueRecv.Unit())
+	printMetric(census.mTicketsRecv.Name(), census.mTicketsRecv.Description(), census.mTicketsRecv.Unit())
+	printMetric(census.mPaymentRecvErr.Name(), census.mPaymentRecvErr.Description(), census.mPaymentRecvErr.Unit())
+	printMetric(census.mWinningTicketsRecv.Name(), census.mWinningTicketsRecv.Description(), census.mWinningTicketsRecv.Unit())
+	printMetric(census.mValueRedeemed.Name(), census.mValueRedeemed.Description(), census.mValueRedeemed.Unit())
+	printMetric(census.mTicketRedemptionError.Name(), census.mTicketRedemptionError.Description(), census.mTicketRedemptionError.Unit())
+	printMetric(census.mSuggestedGasPrice.Name(), census.mSuggestedGasPrice.Description(), census.mSuggestedGasPrice.Unit())
+	printMetric(census.mMinGasPrice.Name(), census.mMinGasPrice.Description(), census.mMinGasPrice.Unit())
+	printMetric(census.mMaxGasPrice.Name(), census.mMaxGasPrice.Description(), census.mMaxGasPrice.Unit())
+	printMetric(census.mTranscodingPrice.Name(), census.mTranscodingPrice.Description(), census.mTranscodingPrice.Unit())
+
+	fmt.Println("### Pixel accounting")
+	printHeader()
+	printMetric(census.mMilPixelsProcessed.Name(), census.mMilPixelsProcessed.Description(), census.mMilPixelsProcessed.Unit())
+
+	fmt.Println("### Fast verification")
+	printHeader()
+	printMetric(census.mFastVerificationDone.Name(), census.mFastVerificationDone.Description(), census.mFastVerificationDone.Unit())
+	printMetric(census.mFastVerificationFailed.Name(), census.mFastVerificationFailed.Description(), census.mFastVerificationFailed.Unit())
+	printMetric(census.mFastVerificationEnabledCurrentSessions.Name(), census.mFastVerificationEnabledCurrentSessions.Description(), census.mFastVerificationEnabledCurrentSessions.Unit())
+	printMetric(census.mFastVerificationUsingCurrentSessions.Name(), census.mFastVerificationUsingCurrentSessions.Description(), census.mFastVerificationUsingCurrentSessions.Unit())
+
+	fmt.Println("## Golang metrics\n")
+	printGolangHeader()
+	printGolangMetric("go_gc_duration_seconds", "A summary of the pause duration of garbage collection cycles.")
+	printGolangMetric("go_goroutines", "Number of goroutines that currently exist.")
+	printGolangMetric("go_info", "Information about the Go environment.")
+	printGolangMetric("go_memstats_alloc_bytes", "Number of bytes allocated and still in use.")
+	printGolangMetric("go_memstats_alloc_bytes_total", "Total number of bytes allocated, even if freed.")
+	printGolangMetric("go_memstats_buck_hash_sys_bytes", "Number of bytes used by the profiling bucket hash table.")
+	printGolangMetric("go_memstats_frees_total", "Total number of frees.")
+	printGolangMetric("go_memstats_gc_cpu_fraction", "The fraction of this program's available CPU time used by the GC since the program started.")
+	printGolangMetric("go_memstats_gc_sys_bytes", "Number of bytes used for garbage collection system metadata.")
+	printGolangMetric("go_memstats_heap_alloc_bytes", "Number of heap bytes allocated and still in use.")
+	printGolangMetric("go_memstats_heap_idle_bytes", "Number of heap bytes waiting to be used.")
+	printGolangMetric("go_memstats_heap_inuse_bytes", "Number of heap bytes that are in use.")
+	printGolangMetric("go_memstats_heap_objects", "Number of allocated objects.")
+	printGolangMetric("go_memstats_heap_released_bytes", "Number of heap bytes released to OS.")
+	printGolangMetric("go_memstats_heap_sys_bytes", "Number of heap bytes obtained from system.")
+	printGolangMetric("go_memstats_last_gc_time_seconds", "Number of seconds since 1970 of last garbage collection.")
+	printGolangMetric("go_memstats_lookups_total", "Total number of pointer lookups.")
+	printGolangMetric("go_memstats_mallocs_total", "Total number of mallocs.")
+	printGolangMetric("go_memstats_mcache_inuse_bytes", "Number of bytes in use by mcache structures.")
+	printGolangMetric("go_memstats_mcache_sys_bytes", "Number of bytes used for mcache structures obtained from system.")
+	printGolangMetric("go_memstats_mspan_inuse_bytes", "Number of bytes in use by mspan structures.")
+	printGolangMetric("go_memstats_mspan_sys_bytes", "Number of bytes used for mspan structures obtained from system.")
+	printGolangMetric("go_memstats_next_gc_bytes", "Number of heap bytes when next garbage collection will take place.")
+	printGolangMetric("go_memstats_other_sys_bytes", "Number of bytes used for other system allocations.")
+	printGolangMetric("go_memstats_stack_inuse_bytes", "Number of bytes in use by the stack allocator.")
+	printGolangMetric("go_memstats_stack_sys_bytes", "Number of bytes obtained from system for stack allocator.")
+	printGolangMetric("go_memstats_sys_bytes", "Number of bytes obtained from system.")
+	printGolangMetric("go_threads", "Number of OS threads created.")
+}
+
+func printHeader() {
+	header := `
+| Name         | Description      | Unit |
+| ------------ | ---------------- | ---- |`
+	fmt.Println(header)
+}
+
+func printMetric(name string, description string, unit string) {
+	fmt.Printf("| `livepeer_%s` | %s | %s |\n", name, description, unit)
+}
+
+func printGolangHeader() {
+	header := `
+| Name         | Description      |
+| ------------ | ---------------- |`
+	fmt.Println(header)
+}
+
+func printGolangMetric(name string, description string) {
+	fmt.Printf("| `%s` | %s |\n", name, description)
 }

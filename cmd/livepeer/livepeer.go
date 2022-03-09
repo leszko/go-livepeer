@@ -388,6 +388,8 @@ func main() {
 			nodeType = lpmon.Redeemer
 		}
 		lpmon.InitCensus(nodeType, core.LivepeerVersion)
+		lpmon.PrintMetricsMarkdown()
+		return
 	}
 
 	watcherErr := make(chan error)
