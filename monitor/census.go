@@ -1769,34 +1769,34 @@ func PrintMetricsMarkdown() {
 
 	fmt.Println("## Golang metrics\n")
 	printGolangHeader()
-	printGolangMetric("go_gc_duration_seconds", "A summary of the pause duration of garbage collection cycles.")
-	printGolangMetric("go_goroutines", "Number of goroutines that currently exist.")
-	printGolangMetric("go_info", "Information about the Go environment.")
-	printGolangMetric("go_memstats_alloc_bytes", "Number of bytes allocated and still in use.")
-	printGolangMetric("go_memstats_alloc_bytes_total", "Total number of bytes allocated, even if freed.")
-	printGolangMetric("go_memstats_buck_hash_sys_bytes", "Number of bytes used by the profiling bucket hash table.")
-	printGolangMetric("go_memstats_frees_total", "Total number of frees.")
-	printGolangMetric("go_memstats_gc_cpu_fraction", "The fraction of this program's available CPU time used by the GC since the program started.")
-	printGolangMetric("go_memstats_gc_sys_bytes", "Number of bytes used for garbage collection system metadata.")
-	printGolangMetric("go_memstats_heap_alloc_bytes", "Number of heap bytes allocated and still in use.")
-	printGolangMetric("go_memstats_heap_idle_bytes", "Number of heap bytes waiting to be used.")
-	printGolangMetric("go_memstats_heap_inuse_bytes", "Number of heap bytes that are in use.")
-	printGolangMetric("go_memstats_heap_objects", "Number of allocated objects.")
-	printGolangMetric("go_memstats_heap_released_bytes", "Number of heap bytes released to OS.")
-	printGolangMetric("go_memstats_heap_sys_bytes", "Number of heap bytes obtained from system.")
-	printGolangMetric("go_memstats_last_gc_time_seconds", "Number of seconds since 1970 of last garbage collection.")
-	printGolangMetric("go_memstats_lookups_total", "Total number of pointer lookups.")
-	printGolangMetric("go_memstats_mallocs_total", "Total number of mallocs.")
-	printGolangMetric("go_memstats_mcache_inuse_bytes", "Number of bytes in use by mcache structures.")
-	printGolangMetric("go_memstats_mcache_sys_bytes", "Number of bytes used for mcache structures obtained from system.")
-	printGolangMetric("go_memstats_mspan_inuse_bytes", "Number of bytes in use by mspan structures.")
-	printGolangMetric("go_memstats_mspan_sys_bytes", "Number of bytes used for mspan structures obtained from system.")
-	printGolangMetric("go_memstats_next_gc_bytes", "Number of heap bytes when next garbage collection will take place.")
-	printGolangMetric("go_memstats_other_sys_bytes", "Number of bytes used for other system allocations.")
-	printGolangMetric("go_memstats_stack_inuse_bytes", "Number of bytes in use by the stack allocator.")
-	printGolangMetric("go_memstats_stack_sys_bytes", "Number of bytes obtained from system for stack allocator.")
-	printGolangMetric("go_memstats_sys_bytes", "Number of bytes obtained from system.")
-	printGolangMetric("go_threads", "Number of OS threads created.")
+	printGolangMetric("go_gc_duration_seconds", "A summary of the pause duration of garbage collection cycles.", "summary")
+	printGolangMetric("go_goroutines", "Number of goroutines that currently exist.", "gauge")
+	printGolangMetric("go_info", "Information about the Go environment.", "gauge")
+	printGolangMetric("go_memstats_alloc_bytes", "Number of bytes allocated and still in use.", "gauge")
+	printGolangMetric("go_memstats_alloc_bytes_total", "Total number of bytes allocated, even if freed.", "counter")
+	printGolangMetric("go_memstats_buck_hash_sys_bytes", "Number of bytes used by the profiling bucket hash table.", "gauge")
+	printGolangMetric("go_memstats_frees_total", "Total number of frees.", "counter")
+	printGolangMetric("go_memstats_gc_cpu_fraction", "The fraction of this program's available CPU time used by the GC since the program started.", "gauge")
+	printGolangMetric("go_memstats_gc_sys_bytes", "Number of bytes used for garbage collection system metadata.", "gauge")
+	printGolangMetric("go_memstats_heap_alloc_bytes", "Number of heap bytes allocated and still in use.", "gauge")
+	printGolangMetric("go_memstats_heap_idle_bytes", "Number of heap bytes waiting to be used.", "gauge")
+	printGolangMetric("go_memstats_heap_inuse_bytes", "Number of heap bytes that are in use.", "gauge")
+	printGolangMetric("go_memstats_heap_objects", "Number of allocated objects.", "gauge")
+	printGolangMetric("go_memstats_heap_released_bytes", "Number of heap bytes released to OS.", "gauge")
+	printGolangMetric("go_memstats_heap_sys_bytes", "Number of heap bytes obtained from system.", "gauge")
+	printGolangMetric("go_memstats_last_gc_time_seconds", "Number of seconds since 1970 of last garbage collection.", "gauge")
+	printGolangMetric("go_memstats_lookups_total", "Total number of pointer lookups.", "counter")
+	printGolangMetric("go_memstats_mallocs_total", "Total number of mallocs.", "counter")
+	printGolangMetric("go_memstats_mcache_inuse_bytes", "Number of bytes in use by mcache structures.", "gauge")
+	printGolangMetric("go_memstats_mcache_sys_bytes", "Number of bytes used for mcache structures obtained from system.", "gauge")
+	printGolangMetric("go_memstats_mspan_inuse_bytes", "Number of bytes in use by mspan structures.", "gauge")
+	printGolangMetric("go_memstats_mspan_sys_bytes", "Number of bytes used for mspan structures obtained from system.", "gauge")
+	printGolangMetric("go_memstats_next_gc_bytes", "Number of heap bytes when next garbage collection will take place.", "gauge")
+	printGolangMetric("go_memstats_other_sys_bytes", "Number of bytes used for other system allocations.", "gauge")
+	printGolangMetric("go_memstats_stack_inuse_bytes", "Number of bytes in use by the stack allocator.", "gauge")
+	printGolangMetric("go_memstats_stack_sys_bytes", "Number of bytes obtained from system for stack allocator.", "gauge")
+	printGolangMetric("go_memstats_sys_bytes", "Number of bytes obtained from system.", "gauge")
+	printGolangMetric("go_threads", "Number of OS threads created.", "gauge")
 }
 
 func printHeader() {
@@ -1812,11 +1812,11 @@ func printMetric(name string, description string, unit string) {
 
 func printGolangHeader() {
 	header := `
-| Name         | Description      |
-| ------------ | ---------------- |`
+| Name         | Description      | Type |
+| ------------ | ---------------- | ---- |`
 	fmt.Println(header)
 }
 
-func printGolangMetric(name string, description string) {
-	fmt.Printf("| `%s` | %s |\n", name, description)
+func printGolangMetric(name string, description string, mType string) {
+	fmt.Printf("| `%s` | %s | %s |\n", name, description, mType)
 }
