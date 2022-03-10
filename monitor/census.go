@@ -1804,27 +1804,36 @@ func PrintMetricsMarkdown() {
 
 func printHeader() {
 	header := `
-| Name         | Description      | Unit | Type |
-| ------------ | ---------------- | ---- | ---- |`
+| Name         | Description      | Unit | Type | Tags |
+| ------------ | ---------------- | ---- | ---- | ---- |`
 	fmt.Println(header)
 }
 
 func printMetric(name string, description string, unit string) {
-	vDescription, vType := findInViews(name)
+	vDescription, vType, vTags := findInViews(name)
 	if vDescription != "" {
 		description = vDescription
 	}
 
-	fmt.Printf("| `livepeer_%s` | %s | %s | %s |\n", name, description, unit, vType)
+	fmt.Printf("| `livepeer_%s` | %s | %s | %s | %s |\n", name, description, unit, vType, vTags)
 }
 
-func findInViews(name string) (string, string) {
+func findInViews(name string) (string, string, string) {
 	for _, v := range GlobalViews {
 		if v.Name == name {
-			return v.Description, toType(v.Aggregation)
+			return v.Description, toType(v.Aggregation), toTags(v.TagKeys)
 		}
 	}
-	return "", ""
+	return "", "", ""
+}
+
+func toTags(keys []tag.Key) string {
+	var keyStrings []string
+	for _, k := range keys {
+		keyStrings = append(keyStrings, k.Name())
+	}
+
+	return strings.Join(keyStrings, ", ")
 }
 
 func toType(aggregation *view.Aggregation) string {
