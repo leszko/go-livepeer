@@ -207,6 +207,7 @@ type (
 var Exporter *prometheus.Exporter
 
 var census CensusMetricsCounter
+var GlobalViews []*view.View
 
 // used in unit tests
 var unitTestMode bool
@@ -827,6 +828,8 @@ func InitCensus(nodeType NodeType, version string) {
 			Aggregation: view.LastValue(),
 		},
 	}
+
+	GlobalViews = views
 
 	// Register the views
 	if err := view.Register(views...); err != nil {
@@ -1684,7 +1687,7 @@ func FastVerificationFailed(ctx context.Context) {
 }
 
 func PrintMetricsMarkdown() {
-	fmt.Println("## Livepeer metrics\n")
+	fmt.Println("\n## Livepeer metrics\n")
 	fmt.Println("### General")
 	printHeader()
 	printMetric("versions", "Version information.", "Num")
@@ -1734,7 +1737,7 @@ func PrintMetricsMarkdown() {
 	printMetric(census.mRecordingSavedSegments.Name(), census.mRecordingSavedSegments.Description(), census.mRecordingSavedSegments.Unit())
 	printMetric(census.mOrchestratorSwaps.Name(), census.mOrchestratorSwaps.Description(), census.mOrchestratorSwaps.Unit())
 
-	fmt.Println("### Sending payments")
+	fmt.Println("\n### Sending payments")
 	printHeader()
 	printMetric(census.mTicketValueSent.Name(), census.mTicketValueSent.Description(), census.mTicketValueSent.Unit())
 	printMetric(census.mTicketsSent.Name(), census.mTicketsSent.Description(), census.mTicketsSent.Unit())
@@ -1743,7 +1746,7 @@ func PrintMetricsMarkdown() {
 	printMetric(census.mReserve.Name(), census.mReserve.Description(), census.mReserve.Unit())
 	printMetric(census.mMaxTranscodingPrice.Name(), census.mMaxTranscodingPrice.Description(), census.mMaxTranscodingPrice.Unit())
 
-	fmt.Println("### Receiving payments")
+	fmt.Println("\n### Receiving payments")
 	printHeader()
 	printMetric(census.mTicketValueRecv.Name(), census.mTicketValueRecv.Description(), census.mTicketValueRecv.Unit())
 	printMetric(census.mTicketsRecv.Name(), census.mTicketsRecv.Description(), census.mTicketsRecv.Unit())
@@ -1756,18 +1759,18 @@ func PrintMetricsMarkdown() {
 	printMetric(census.mMaxGasPrice.Name(), census.mMaxGasPrice.Description(), census.mMaxGasPrice.Unit())
 	printMetric(census.mTranscodingPrice.Name(), census.mTranscodingPrice.Description(), census.mTranscodingPrice.Unit())
 
-	fmt.Println("### Pixel accounting")
+	fmt.Println("\n### Pixel accounting")
 	printHeader()
 	printMetric(census.mMilPixelsProcessed.Name(), census.mMilPixelsProcessed.Description(), census.mMilPixelsProcessed.Unit())
 
-	fmt.Println("### Fast verification")
+	fmt.Println("\n### Fast verification")
 	printHeader()
 	printMetric(census.mFastVerificationDone.Name(), census.mFastVerificationDone.Description(), census.mFastVerificationDone.Unit())
 	printMetric(census.mFastVerificationFailed.Name(), census.mFastVerificationFailed.Description(), census.mFastVerificationFailed.Unit())
 	printMetric(census.mFastVerificationEnabledCurrentSessions.Name(), census.mFastVerificationEnabledCurrentSessions.Description(), census.mFastVerificationEnabledCurrentSessions.Unit())
 	printMetric(census.mFastVerificationUsingCurrentSessions.Name(), census.mFastVerificationUsingCurrentSessions.Description(), census.mFastVerificationUsingCurrentSessions.Unit())
 
-	fmt.Println("## Golang metrics\n")
+	fmt.Println("\n## Golang metrics\n")
 	printGolangHeader()
 	printGolangMetric("go_gc_duration_seconds", "A summary of the pause duration of garbage collection cycles.", "summary")
 	printGolangMetric("go_goroutines", "Number of goroutines that currently exist.", "gauge")
@@ -1801,13 +1804,42 @@ func PrintMetricsMarkdown() {
 
 func printHeader() {
 	header := `
-| Name         | Description      | Unit |
-| ------------ | ---------------- | ---- |`
+| Name         | Description      | Unit | Type |
+| ------------ | ---------------- | ---- | ---- |`
 	fmt.Println(header)
 }
 
 func printMetric(name string, description string, unit string) {
-	fmt.Printf("| `livepeer_%s` | %s | %s |\n", name, description, unit)
+	vDescription, vType := findInViews(name)
+	if vDescription != "" {
+		description = vDescription
+	}
+
+	fmt.Printf("| `livepeer_%s` | %s | %s | %s |\n", name, description, unit, vType)
+}
+
+func findInViews(name string) (string, string) {
+	for _, v := range GlobalViews {
+		if v.Name == name {
+			return v.Description, toType(v.Aggregation)
+		}
+	}
+	return "", ""
+}
+
+func toType(aggregation *view.Aggregation) string {
+	switch aggregation.Type {
+	case view.AggTypeCount:
+		return "counter"
+	case view.AggTypeSum:
+		return "counter"
+	case view.AggTypeDistribution:
+		return "histogram"
+	case view.AggTypeLastValue:
+		return "gauge"
+
+	}
+	return ""
 }
 
 func printGolangHeader() {
