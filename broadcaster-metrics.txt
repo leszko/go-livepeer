@@ -1,0 +1,268 @@
+# HELP go_gc_duration_seconds A summary of the pause duration of garbage collection cycles.
+# TYPE go_gc_duration_seconds summary
+go_gc_duration_seconds{quantile="0"} 2.45e-05
+go_gc_duration_seconds{quantile="0.25"} 3.2751e-05
+go_gc_duration_seconds{quantile="0.5"} 3.8374e-05
+go_gc_duration_seconds{quantile="0.75"} 5.1709e-05
+go_gc_duration_seconds{quantile="1"} 0.000329125
+go_gc_duration_seconds_sum 0.005415042
+go_gc_duration_seconds_count 109
+# HELP go_goroutines Number of goroutines that currently exist.
+# TYPE go_goroutines gauge
+go_goroutines 50
+# HELP go_info Information about the Go environment.
+# TYPE go_info gauge
+go_info{version="go1.17.3"} 1
+# HELP go_memstats_alloc_bytes Number of bytes allocated and still in use.
+# TYPE go_memstats_alloc_bytes gauge
+go_memstats_alloc_bytes 1.6833312e+07
+# HELP go_memstats_alloc_bytes_total Total number of bytes allocated, even if freed.
+# TYPE go_memstats_alloc_bytes_total counter
+go_memstats_alloc_bytes_total 1.630927976e+09
+# HELP go_memstats_buck_hash_sys_bytes Number of bytes used by the profiling bucket hash table.
+# TYPE go_memstats_buck_hash_sys_bytes gauge
+go_memstats_buck_hash_sys_bytes 1.510943e+06
+# HELP go_memstats_frees_total Total number of frees.
+# TYPE go_memstats_frees_total counter
+go_memstats_frees_total 2.133894e+06
+# HELP go_memstats_gc_cpu_fraction The fraction of this program's available CPU time used by the GC since the program started.
+# TYPE go_memstats_gc_cpu_fraction gauge
+go_memstats_gc_cpu_fraction 2.7313980402176927e-05
+# HELP go_memstats_gc_sys_bytes Number of bytes used for garbage collection system metadata.
+# TYPE go_memstats_gc_sys_bytes gauge
+go_memstats_gc_sys_bytes 1.8752008e+07
+# HELP go_memstats_heap_alloc_bytes Number of heap bytes allocated and still in use.
+# TYPE go_memstats_heap_alloc_bytes gauge
+go_memstats_heap_alloc_bytes 1.6833312e+07
+# HELP go_memstats_heap_idle_bytes Number of heap bytes waiting to be used.
+# TYPE go_memstats_heap_idle_bytes gauge
+go_memstats_heap_idle_bytes 4.33168384e+08
+# HELP go_memstats_heap_inuse_bytes Number of heap bytes that are in use.
+# TYPE go_memstats_heap_inuse_bytes gauge
+go_memstats_heap_inuse_bytes 2.289664e+07
+# HELP go_memstats_heap_objects Number of allocated objects.
+# TYPE go_memstats_heap_objects gauge
+go_memstats_heap_objects 38956
+# HELP go_memstats_heap_released_bytes Number of heap bytes released to OS.
+# TYPE go_memstats_heap_released_bytes gauge
+go_memstats_heap_released_bytes 4.24534016e+08
+# HELP go_memstats_heap_sys_bytes Number of heap bytes obtained from system.
+# TYPE go_memstats_heap_sys_bytes gauge
+go_memstats_heap_sys_bytes 4.56065024e+08
+# HELP go_memstats_last_gc_time_seconds Number of seconds since 1970 of last garbage collection.
+# TYPE go_memstats_last_gc_time_seconds gauge
+go_memstats_last_gc_time_seconds 1.646993982585407e+09
+# HELP go_memstats_lookups_total Total number of pointer lookups.
+# TYPE go_memstats_lookups_total counter
+go_memstats_lookups_total 0
+# HELP go_memstats_mallocs_total Total number of mallocs.
+# TYPE go_memstats_mallocs_total counter
+go_memstats_mallocs_total 2.17285e+06
+# HELP go_memstats_mcache_inuse_bytes Number of bytes in use by mcache structures.
+# TYPE go_memstats_mcache_inuse_bytes gauge
+go_memstats_mcache_inuse_bytes 12000
+# HELP go_memstats_mcache_sys_bytes Number of bytes used for mcache structures obtained from system.
+# TYPE go_memstats_mcache_sys_bytes gauge
+go_memstats_mcache_sys_bytes 16384
+# HELP go_memstats_mspan_inuse_bytes Number of bytes in use by mspan structures.
+# TYPE go_memstats_mspan_inuse_bytes gauge
+go_memstats_mspan_inuse_bytes 242896
+# HELP go_memstats_mspan_sys_bytes Number of bytes used for mspan structures obtained from system.
+# TYPE go_memstats_mspan_sys_bytes gauge
+go_memstats_mspan_sys_bytes 819200
+# HELP go_memstats_next_gc_bytes Number of heap bytes when next garbage collection will take place.
+# TYPE go_memstats_next_gc_bytes gauge
+go_memstats_next_gc_bytes 2.5636368e+07
+# HELP go_memstats_other_sys_bytes Number of bytes used for other system allocations.
+# TYPE go_memstats_other_sys_bytes gauge
+go_memstats_other_sys_bytes 2.120769e+06
+# HELP go_memstats_stack_inuse_bytes Number of bytes in use by the stack allocator.
+# TYPE go_memstats_stack_inuse_bytes gauge
+go_memstats_stack_inuse_bytes 1.114112e+06
+# HELP go_memstats_stack_sys_bytes Number of bytes obtained from system for stack allocator.
+# TYPE go_memstats_stack_sys_bytes gauge
+go_memstats_stack_sys_bytes 1.114112e+06
+# HELP go_memstats_sys_bytes Number of bytes obtained from system.
+# TYPE go_memstats_sys_bytes gauge
+go_memstats_sys_bytes 4.8039844e+08
+# HELP go_threads Number of OS threads created.
+# TYPE go_threads gauge
+go_threads 19
+# HELP livepeer_broadcaster_deposit Current remaining deposit for the broadcaster node
+# TYPE livepeer_broadcaster_deposit gauge
+livepeer_broadcaster_deposit{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr"} 9.9964999999755e+10
+# HELP livepeer_broadcaster_reserve Current remaining reserve for the broadcaster node
+# TYPE livepeer_broadcaster_reserve gauge
+livepeer_broadcaster_reserve{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr"} 1e+11
+# HELP livepeer_current_sessions_total Number of streams currently transcoding
+# TYPE livepeer_current_sessions_total gauge
+livepeer_current_sessions_total{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr"} 1
+# HELP livepeer_download_time_seconds Download time
+# TYPE livepeer_download_time_seconds histogram
+livepeer_download_time_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",le="0.1"} 471
+livepeer_download_time_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",le="0.15"} 471
+livepeer_download_time_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",le="0.2"} 471
+livepeer_download_time_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",le="0.5"} 471
+livepeer_download_time_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",le="10"} 471
+livepeer_download_time_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",le="+Inf"} 471
+livepeer_download_time_seconds_sum{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr"} 0.29402033299999986
+livepeer_download_time_seconds_count{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr"} 471
+# HELP livepeer_fast_verification_enabled_current_sessions_total Number of currently transcoded streams that have fast verification enabled
+# TYPE livepeer_fast_verification_enabled_current_sessions_total gauge
+livepeer_fast_verification_enabled_current_sessions_total{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr"} 0
+# HELP livepeer_fast_verification_using_current_sessions_total Number of currently transcoded streams that have fast verification enabled and that are using an untrusted orchestrator
+# TYPE livepeer_fast_verification_using_current_sessions_total gauge
+livepeer_fast_verification_using_current_sessions_total{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr"} 0
+# HELP livepeer_max_sessions_total Max Sessions
+# TYPE livepeer_max_sessions_total gauge
+livepeer_max_sessions_total{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr"} 10
+# HELP livepeer_mil_pixels_processed Million pixels processed
+# TYPE livepeer_mil_pixels_processed counter
+livepeer_mil_pixels_processed{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr"} 26044.415999999786
+# HELP livepeer_min_gas_price Minimum gas price to use for gas price suggestions
+# TYPE livepeer_min_gas_price gauge
+livepeer_min_gas_price{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr"} 0
+# HELP livepeer_orchestrator_swaps Number of orchestrator swaps mid-stream
+# TYPE livepeer_orchestrator_swaps counter
+livepeer_orchestrator_swaps{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr"} 1
+# HELP livepeer_segment_source_appeared_total SegmentSourceAppeared
+# TYPE livepeer_segment_source_appeared_total counter
+livepeer_segment_source_appeared_total{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profile="source",seg_type="regular"} 473
+# HELP livepeer_segment_source_emerged_total SegmentEmerged
+# TYPE livepeer_segment_source_emerged_total counter
+livepeer_segment_source_emerged_total{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr"} 472
+# HELP livepeer_segment_source_emerged_unprocessed_total Raw number of segments emerged from segmenter.
+# TYPE livepeer_segment_source_emerged_unprocessed_total counter
+livepeer_segment_source_emerged_unprocessed_total{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr"} 473
+# HELP livepeer_segment_source_uploaded_total SegmentUploaded
+# TYPE livepeer_segment_source_uploaded_total counter
+livepeer_segment_source_uploaded_total{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",orchestrator_uri="https://127.0.0.1:8936"} 473
+# HELP livepeer_segment_transcode_failed_total SegmentTranscodeFailed
+# TYPE livepeer_segment_transcode_failed_total counter
+livepeer_segment_transcode_failed_total{error_code="NoOrchestrators",node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr"} 1
+livepeer_segment_transcode_failed_total{error_code="Transcode",node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr"} 1
+# HELP livepeer_segment_transcoded_all_appeared_total SegmentTranscodedAllAppeared
+# TYPE livepeer_segment_transcoded_all_appeared_total counter
+livepeer_segment_transcoded_all_appeared_total{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9"} 471
+# HELP livepeer_segment_transcoded_downloaded_total SegmentDownloaded
+# TYPE livepeer_segment_transcoded_downloaded_total counter
+livepeer_segment_transcoded_downloaded_total{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr"} 471
+# HELP livepeer_segment_transcoded_total SegmentTranscoded
+# TYPE livepeer_segment_transcoded_total counter
+livepeer_segment_transcoded_total{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified"} 471
+# HELP livepeer_segment_transcoded_unprocessed_total Raw number of segments successfully transcoded.
+# TYPE livepeer_segment_transcoded_unprocessed_total counter
+livepeer_segment_transcoded_unprocessed_total{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9"} 471
+# HELP livepeer_source_segment_duration_seconds Source segment's duration
+# TYPE livepeer_source_segment_duration_seconds histogram
+livepeer_source_segment_duration_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",le="0.5"} 0
+livepeer_source_segment_duration_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",le="1"} 0
+livepeer_source_segment_duration_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",le="1.5"} 0
+livepeer_source_segment_duration_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",le="2"} 0
+livepeer_source_segment_duration_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",le="2.5"} 473
+livepeer_source_segment_duration_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",le="3"} 473
+livepeer_source_segment_duration_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",le="3.5"} 473
+livepeer_source_segment_duration_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",le="4"} 473
+livepeer_source_segment_duration_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",le="4.5"} 473
+livepeer_source_segment_duration_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",le="5"} 473
+livepeer_source_segment_duration_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",le="10"} 473
+livepeer_source_segment_duration_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",le="15"} 473
+livepeer_source_segment_duration_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",le="20"} 473
+livepeer_source_segment_duration_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",le="+Inf"} 473
+livepeer_source_segment_duration_seconds_sum{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr"} 946
+livepeer_source_segment_duration_seconds_count{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr"} 473
+# HELP livepeer_stream_created_total StreamCreated
+# TYPE livepeer_stream_created_total counter
+livepeer_stream_created_total{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr"} 1
+# HELP livepeer_stream_started_total StreamStarted
+# TYPE livepeer_stream_started_total counter
+livepeer_stream_started_total{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr"} 1
+# HELP livepeer_success_rate Number of transcoded segments divided on number of source segments
+# TYPE livepeer_success_rate gauge
+livepeer_success_rate{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr"} 1
+# HELP livepeer_suggested_gas_price Suggested gas price for winning ticket redemption
+# TYPE livepeer_suggested_gas_price gauge
+livepeer_suggested_gas_price{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr"} 1.000000007
+# HELP livepeer_ticket_value_sent Ticket value sent
+# TYPE livepeer_ticket_value_sent counter
+livepeer_ticket_value_sent{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr"} 4e+07
+# HELP livepeer_tickets_sent Tickets sent
+# TYPE livepeer_tickets_sent counter
+livepeer_tickets_sent{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr"} 4
+# HELP livepeer_transcode_overall_latency_seconds Transcoding latency, from source segment emerged from segmenter till all transcoded segment apeeared in manifest
+# TYPE livepeer_transcode_overall_latency_seconds histogram
+livepeer_transcode_overall_latency_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",le="0.5"} 466
+livepeer_transcode_overall_latency_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",le="0.75"} 471
+livepeer_transcode_overall_latency_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",le="1"} 471
+livepeer_transcode_overall_latency_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",le="1.5"} 471
+livepeer_transcode_overall_latency_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",le="2"} 471
+livepeer_transcode_overall_latency_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",le="2.5"} 471
+livepeer_transcode_overall_latency_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",le="3"} 471
+livepeer_transcode_overall_latency_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",le="3.5"} 471
+livepeer_transcode_overall_latency_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",le="4"} 471
+livepeer_transcode_overall_latency_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",le="4.5"} 471
+livepeer_transcode_overall_latency_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",le="5"} 471
+livepeer_transcode_overall_latency_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",le="10"} 471
+livepeer_transcode_overall_latency_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",le="+Inf"} 471
+livepeer_transcode_overall_latency_seconds_sum{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9"} 202.79849838400025
+livepeer_transcode_overall_latency_seconds_count{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9"} 471
+# HELP livepeer_transcode_score Ratio of source segment duration vs. transcode time
+# TYPE livepeer_transcode_score histogram
+livepeer_transcode_score_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified",le="0.5"} 0
+livepeer_transcode_score_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified",le="1"} 0
+livepeer_transcode_score_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified",le="1.5"} 0
+livepeer_transcode_score_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified",le="2"} 0
+livepeer_transcode_score_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified",le="2.5"} 0
+livepeer_transcode_score_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified",le="3"} 0
+livepeer_transcode_score_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified",le="3.5"} 2
+livepeer_transcode_score_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified",le="4"} 2
+livepeer_transcode_score_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified",le="4.5"} 4
+livepeer_transcode_score_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified",le="5"} 8
+livepeer_transcode_score_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified",le="10"} 471
+livepeer_transcode_score_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified",le="15"} 471
+livepeer_transcode_score_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified",le="20"} 471
+livepeer_transcode_score_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified",le="40"} 471
+livepeer_transcode_score_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified",le="+Inf"} 471
+livepeer_transcode_score_sum{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified"} 2603.6913332596623
+livepeer_transcode_score_count{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified"} 471
+# HELP livepeer_transcode_time_seconds TranscodeTime, seconds
+# TYPE livepeer_transcode_time_seconds histogram
+livepeer_transcode_time_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified",le="0.25"} 0
+livepeer_transcode_time_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified",le="0.5"} 469
+livepeer_transcode_time_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified",le="0.75"} 471
+livepeer_transcode_time_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified",le="1"} 471
+livepeer_transcode_time_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified",le="1.25"} 471
+livepeer_transcode_time_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified",le="1.5"} 471
+livepeer_transcode_time_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified",le="2"} 471
+livepeer_transcode_time_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified",le="2.5"} 471
+livepeer_transcode_time_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified",le="3"} 471
+livepeer_transcode_time_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified",le="3.5"} 471
+livepeer_transcode_time_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified",le="4"} 471
+livepeer_transcode_time_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified",le="4.5"} 471
+livepeer_transcode_time_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified",le="5"} 471
+livepeer_transcode_time_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified",le="10"} 471
+livepeer_transcode_time_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified",le="+Inf"} 471
+livepeer_transcode_time_seconds_sum{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified"} 170.781817674
+livepeer_transcode_time_seconds_count{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",profiles="P720p30fps16x9",trusted="untrusted",verified="unverified"} 471
+# HELP livepeer_transcoders_capacity Total advertised capacity of transcoders currently connected to orchestrator
+# TYPE livepeer_transcoders_capacity gauge
+livepeer_transcoders_capacity{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr"} 0
+# HELP livepeer_transcoders_load Total load of transcoders currently connected to orchestrator
+# TYPE livepeer_transcoders_load gauge
+livepeer_transcoders_load{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr"} 0
+# HELP livepeer_transcoders_number Number of transcoders currently connected to orchestrator
+# TYPE livepeer_transcoders_number gauge
+livepeer_transcoders_number{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr"} 0
+# HELP livepeer_upload_time_seconds UploadTime, seconds
+# TYPE livepeer_upload_time_seconds histogram
+livepeer_upload_time_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",orchestrator_uri="https://127.0.0.1:8936",le="0.1"} 473
+livepeer_upload_time_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",orchestrator_uri="https://127.0.0.1:8936",le="0.15"} 473
+livepeer_upload_time_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",orchestrator_uri="https://127.0.0.1:8936",le="0.2"} 473
+livepeer_upload_time_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",orchestrator_uri="https://127.0.0.1:8936",le="0.5"} 473
+livepeer_upload_time_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",orchestrator_uri="https://127.0.0.1:8936",le="10"} 473
+livepeer_upload_time_seconds_bucket{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",orchestrator_uri="https://127.0.0.1:8936",le="+Inf"} 473
+livepeer_upload_time_seconds_sum{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",orchestrator_uri="https://127.0.0.1:8936"} 0.856210171
+livepeer_upload_time_seconds_count{node_id="0x72e4dd39E3eA7fbb946B20FA191f1779498Fd1BA-Rafas-MacBook-Pro.local",node_type="bctr",orchestrator_uri="https://127.0.0.1:8936"} 473
+# HELP livepeer_versions Versions used by LivePeer node.
+# TYPE livepeer_versions gauge
+livepeer_versions{compiler="gc",goos="darwin",goversion="go1.17.3",livepeerversion="0.5.29-8b2490e3-dirty",node_type="bctr"} 1

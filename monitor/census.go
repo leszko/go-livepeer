@@ -3,6 +3,7 @@ package monitor
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"math/big"
 	"net"
 	"runtime"
@@ -1808,12 +1809,15 @@ func printHeader() {
 	//| ------------ | ---------------- | ---- | ---- | ---- |`
 
 	header := `
-| Name         | Description      |
-| ------------ | ---------------- |`
+| Name         | Description      | Node Type |
+| ------------ | ---------------- | --------- |`
 	fmt.Println(header)
 }
 
 func printMetric(name string, description string, unit string) {
+	if contains(exclude, name) {
+		return
+	}
 	//vDescription, vType, vTags := findInViews(name)
 	//if vDescription != "" {
 	//	description = vDescription
@@ -1823,8 +1827,106 @@ func printMetric(name string, description string, unit string) {
 		description = vDescription
 	}
 
-	fmt.Printf("| `livepeer_%s` | %s |\n", name, description)
+	nodeTypes := findInFiles(name)
+
+	fmt.Printf("| `livepeer_%s` | %s | %s |\n", name, description, nodeTypes)
 	//fmt.Printf("| `livepeer_%s` | %s | %s | %s | %s |\n", name, description, unit, vType, vTags)
+}
+
+func findInFiles(name string) string {
+	var nodeTypes []string
+
+	nodeTypes = getFromNodeTypeMap(name, false)
+
+	if fileContains("broadcaster-metrics.txt", name) {
+		if !contains(nodeTypes, "Broadcaster") {
+			nodeTypes = append(nodeTypes, "Broadcaster")
+		}
+	}
+	if fileContains("orchestrator-metrics.txt", name) {
+		nodeTypes = append(nodeTypes, "Orchestrator")
+	}
+	if fileContains("transcoder-metrics.txt", name) {
+		if !contains(nodeTypes, "Orchestrator") {
+			nodeTypes = append(nodeTypes, "Orchestrator")
+		}
+		nodeTypes = append(nodeTypes, "Transcoder")
+	}
+	if fileContains("redeemer-metrics.txt", name) {
+		if !contains(nodeTypes, "Orchestrator") {
+			nodeTypes = append(nodeTypes, "Orchestrator")
+		}
+		nodeTypes = append(nodeTypes, "Redeemer")
+	}
+
+	if len(nodeTypes) == 0 {
+		nodeTypes = getFromNodeTypeMap(name, true)
+	}
+
+	return strings.Join(nodeTypes, ", ")
+}
+
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
+
+func fileContains(filename string, metricsName string) bool {
+	buf, err := ioutil.ReadFile("/Users/rafalleszko/repos/go-livepeer/" + filename)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	content := string(buf)
+	return strings.Contains(content, metricsName)
+}
+
+var exclude = []string{
+	"segment_transcoded_appeared_total",
+	"broadcast_client_start_failed_total",
+	"stream_create_failed_total",
+	"transcode_latency_seconds",
+	"max_transcoding_price",
+}
+
+var nodeTypeMap = map[string][]string{
+	"fast_verification_done":                        {"Broadcaster"},
+	"fast_verification_failed":                      {"Broadcaster"},
+	"segment_source_upload_failed_total":            {"Broadcaster"},
+	"stream_ended_total":                            {"Broadcaster"},
+	"discovery_errors_total":                        {"Broadcaster"},
+	"transcode_retried":                             {"Broadcaster"},
+	"success_rate_per_stream":                       {"Broadcaster"},
+	"auth_webhook_time_milliseconds":                {"Broadcaster"},
+	"http_client_timeout_1":                         {"Broadcaster"},
+	"http_client_timeout_2":                         {"Broadcaster"},
+	"http_client_segment_transcoded_realtime_ratio": {"Broadcaster"},
+	"http_client_segment_transcoded_realtime_3x":    {"Broadcaster"},
+	"http_client_segment_transcoded_realtime_2x":    {"Broadcaster"},
+	"http_client_segment_transcoded_realtime_1x":    {"Broadcaster"},
+	"http_client_segment_transcoded_realtime_half":  {"Broadcaster"},
+	"http_client_segment_transcoded_realtime_slow":  {"Broadcaster"},
+	"recording_save_latency":                        {"Broadcaster"},
+	"recording_save_errors":                         {"Broadcaster"},
+	"recording_saved_segments":                      {"Broadcaster"},
+	"payment_create_errors":                         {"Broadcaster"},
+	"payment_recv_errors":                           {"Orchestrator"},
+	"max_gas_price":                                 {"Broadcaster", "Orchestrator", "Redeemer"},
+}
+
+func getFromNodeTypeMap(name string, printUnknown bool) []string {
+	// TODO
+	res := nodeTypeMap[name]
+	if res != nil {
+		return res
+	}
+	if printUnknown {
+		fmt.Println("### UNKNOWN " + name)
+	}
+	return []string{}
 }
 
 func findInViews(name string) (string, string, string) {
