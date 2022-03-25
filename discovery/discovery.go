@@ -206,7 +206,6 @@ func (o *orchestratorPool) GetOrchestrators(ctx context.Context, numOrchestrator
 	for _, o := range linfos {
 		urls = append(urls, o.URL)
 	}
-	o.orchInfoCache.refresh(ctx, urls)
 
 	orchInfos := o.orchInfoCache.orchInfos()
 	suspendedInfos := newSuspensionQueue()

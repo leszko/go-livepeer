@@ -257,6 +257,27 @@ func (dbo *DBOrchestratorPoolCache) pollOrchestratorInfo(ctx context.Context) er
 	if err := dbo.cacheDBOrchs(); err != nil {
 		return err
 	}
+	if urls, err := dbo.getURLs(); err != nil {
+		return err
+	} else {
+		dbo.orchInfoCache.refresh(ctx, urls)
+	}
+
+	cacheTicker := time.NewTimer(15 * time.Minute)
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-cacheTicker.C:
+				if urls, err := dbo.getURLs(); err != nil {
+					glog.Errorf("unable to cache orchestrator info: %v", err)
+				} else {
+					dbo.orchInfoCache.refresh(ctx, urls)
+				}
+			}
+		}
+	}()
 
 	ticker := getTicker()
 	go func() {
