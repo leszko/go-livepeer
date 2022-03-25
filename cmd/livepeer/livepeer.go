@@ -1113,6 +1113,7 @@ func StartLivepeer(ctx context.Context, cfg LivepeerConfig) {
 		*cfg.httpAddr = defaultAddr(*cfg.httpAddr, "127.0.0.1", RpcPort)
 
 		bcast := core.NewBroadcaster(n)
+		orchInfoCache := discovery.NewOrchInfoCache(bcast)
 
 		// When the node is on-chain mode always cache the on-chain orchestrators and poll for updates
 		// Right now we rely on the DBOrchestratorPoolCache constructor to do this. Consider separating the logic
@@ -1120,7 +1121,7 @@ func StartLivepeer(ctx context.Context, cfg LivepeerConfig) {
 		if *cfg.network != "offchain" {
 			ctx, cancel := context.WithCancel(ctx)
 			defer cancel()
-			dbOrchPoolCache, err := discovery.NewDBOrchestratorPoolCache(ctx, n, timeWatcher)
+			dbOrchPoolCache, err := discovery.NewDBOrchestratorPoolCache(ctx, n, timeWatcher, orchInfoCache)
 			if err != nil {
 				glog.Errorf("Could not create orchestrator pool with DB cache: %v", err)
 			}
@@ -1137,7 +1138,7 @@ func StartLivepeer(ctx context.Context, cfg LivepeerConfig) {
 			glog.Info("Using orchestrator webhook URL ", whurl)
 			n.OrchestratorPool = discovery.NewWebhookPool(bcast, whurl)
 		} else if len(orchURLs) > 0 {
-			n.OrchestratorPool = discovery.NewOrchestratorPool(bcast, orchURLs, common.Score_Trusted)
+			n.OrchestratorPool = discovery.NewOrchestratorPool(bcast, orchURLs, common.Score_Trusted, orchInfoCache)
 		}
 
 		if n.OrchestratorPool == nil {
