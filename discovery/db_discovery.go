@@ -127,13 +127,13 @@ func (dbo *DBOrchestratorPoolCache) GetOrchestrators(ctx context.Context, numOrc
 			return false
 		}
 
-		if err := dbo.ticketParamsValidator.ValidateTicketParams(pmTicketParams(info.TicketParams)); err != nil {
-			clog.V(common.DEBUG).Infof(ctx, "invalid ticket params orch=%v err=%q",
-				info.GetTranscoder(),
-				err,
-			)
-			return false
-		}
+		//if err := dbo.ticketParamsValidator.ValidateTicketParams(pmTicketParams(info.TicketParams)); err != nil {
+		//	clog.V(common.DEBUG).Infof(ctx, "invalid ticket params orch=%v err=%q",
+		//		info.GetTranscoder(),
+		//		err,
+		//	)
+		//	return false
+		//}
 
 		// check if O's price is below B's max price
 		maxPrice := server.BroadcastCfg.MaxPrice()

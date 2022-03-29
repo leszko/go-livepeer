@@ -42,6 +42,7 @@ func NewOrchInfoCache(bcast common.Broadcaster) OrchInfoCache {
 }
 
 func (oic *OrchInfoCache) refresh(ctx context.Context, urls []*url.URL) {
+	clog.Infof(ctx, "Start refreshing orchestrator infos")
 	getOrchInfo := func(ctx context.Context, uri *url.URL, infoCh chan *net.OrchestratorInfo, errCh chan error) {
 		info, err := serverGetOrchInfo(ctx, oic.bcast, uri)
 		if err == nil {
@@ -107,6 +108,8 @@ func (oic *OrchInfoCache) refresh(ctx context.Context, urls []*url.URL) {
 	oic.mu.Lock()
 	oic.orchInfosCached = infos
 	oic.mu.Unlock()
+
+	clog.Infof(ctx, "Done fetching orch info numOrch=%d responses=%d timedOut=%t", len(infos), nbResp, timedOut)
 }
 
 func (oic *OrchInfoCache) orchInfos() []*net.OrchestratorInfo {
