@@ -96,4 +96,6 @@ jobs:
 #          verbose: true
 
       - name: Run E2E tests
-        run: ./test_e2e.sh
+        run: |
+          export PKG_CONFIG_PATH=~/compiled/lib/pkgconfig
+          ./test_e2e.sh
