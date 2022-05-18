@@ -71,26 +71,29 @@ jobs:
           sudo apt-get update
           sudo apt-get install -yqq protobuf-compiler
 
-      - name: go fmt
-        run: |
-          echo "PKG_CONFIG_PATH=${HOME}/compiled/lib/pkgconfig" >> $GITHUB_ENV
-          go fmt ./...
-          git diff --exit-code
+#      - name: go fmt
+#        run: |
+#          echo "PKG_CONFIG_PATH=${HOME}/compiled/lib/pkgconfig" >> $GITHUB_ENV
+#          go fmt ./...
+#          git diff --exit-code
+#
+#      - name: Lint
+#        uses: golangci/golangci-lint-action@v3
+#        with:
+#          version: v1.39.0
+#          args: '--disable-all --enable=gofmt --enable=vet --enable=golint --deadline=4m pm verification'
+#
+#      - name: Run tests with coverage
+#        run: |
+#          export PKG_CONFIG_PATH=~/compiled/lib/pkgconfig
+#          ./test.sh
+#
+#      - name: Upload coverage reports
+#        uses: codecov/codecov-action@v3
+#        with:
+#          files: ./cover.out
+#          name: go-livepeer
+#          verbose: true
 
-      - name: Lint
-        uses: golangci/golangci-lint-action@v3
-        with:
-          version: v1.39.0
-          args: '--disable-all --enable=gofmt --enable=vet --enable=golint --deadline=4m pm verification'
-
-      - name: Run tests with coverage
-        run: |
-          export PKG_CONFIG_PATH=~/compiled/lib/pkgconfig
-          ./test.sh
-
-      - name: Upload coverage reports
-        uses: codecov/codecov-action@v3
-        with:
-          files: ./cover.out
-          name: go-livepeer
-          verbose: true
+      - name: Run E2E tests
+        run: ./test_e2e.sh
