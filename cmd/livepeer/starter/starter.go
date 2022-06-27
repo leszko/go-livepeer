@@ -499,7 +499,8 @@ func StartLivepeer(ctx context.Context, cfg LivepeerConfig) {
 		}
 
 		//Set up eth client
-		backend, err := ethclient.Dial(*cfg.EthUrl)
+		ethUrl := strings.Split(*cfg.EthUrl, ",")[0]
+		backend, err := ethclient.Dial(ethUrl)
 		if err != nil {
 			glog.Errorf("Failed to connect to Ethereum client: %v", err)
 			return
@@ -580,7 +581,7 @@ func StartLivepeer(ctx context.Context, cfg LivepeerConfig) {
 		addrMap := n.Eth.ContractAddresses()
 
 		// Initialize block watcher that will emit logs used by event watchers
-		blockWatcherClient, err := blockwatch.NewRPCClient(*cfg.EthUrl, ethRPCTimeout)
+		blockWatcherClient, err := blockwatch.NewFailoverRPCClient(*cfg.EthUrl, ethRPCTimeout)
 		if err != nil {
 			glog.Errorf("Failed to setup blockwatch client: %v", err)
 			return

@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"math/big"
+	"strings"
+	"sync"
 	"time"
 
 	"github.com/ethereum/go-ethereum"
@@ -31,9 +33,113 @@ type RPCClient struct {
 	requestTimeout time.Duration
 }
 
+type RPCFailoverClient struct {
+	clients []Client
+	n       int
+	mu      sync.Mutex
+}
+
+func NewFailoverRPCClient(rpcURLs string, requestTimeout time.Duration) (Client, error) {
+	var clients []Client
+	for _, url := range strings.Split(rpcURLs, ",") {
+		client, err := NewRPCClient(url, requestTimeout)
+		if err != nil {
+			return nil, err
+		}
+		clients = append(clients, client)
+	}
+	return &RPCFailoverClient{clients: clients}, nil
+}
+
+const retries = 3
+
+func (c *RPCFailoverClient) HeaderByNumber(number *big.Int) (*MiniHeader, error) {
+	c.mu.Lock()
+	n := c.n
+	c.mu.Unlock()
+
+	var res *MiniHeader
+	var err error
+
+	for i := 0; i < retries; i++ {
+		res, err = c.clients[n].HeaderByNumber(number)
+		if err == nil {
+			return res, err
+		}
+	}
+
+	for i := 0; i < len(c.clients); i++ {
+		newN := (n + i) % len(c.clients)
+		res, err = c.clients[newN].HeaderByNumber(number)
+		if err == nil {
+			c.mu.Lock()
+			c.n = newN
+			c.mu.Unlock()
+			return res, err
+		}
+	}
+	return res, err
+}
+
+func (c *RPCFailoverClient) HeaderByHash(hash common.Hash) (*MiniHeader, error) {
+	c.mu.Lock()
+	n := c.n
+	c.mu.Unlock()
+
+	var res *MiniHeader
+	var err error
+
+	for i := 0; i < retries; i++ {
+		res, err = c.clients[n].HeaderByHash(hash)
+		if err == nil {
+			return res, err
+		}
+	}
+
+	for i := 0; i < len(c.clients); i++ {
+		newN := (n + i) % len(c.clients)
+		res, err = c.clients[newN].HeaderByHash(hash)
+		if err == nil {
+			c.mu.Lock()
+			c.n = newN
+			c.mu.Unlock()
+			return res, err
+		}
+	}
+	return res, err
+}
+
+func (c *RPCFailoverClient) FilterLogs(q ethereum.FilterQuery) ([]types.Log, error) {
+	c.mu.Lock()
+	n := c.n
+	c.mu.Unlock()
+
+	var res []types.Log
+	var err error
+
+	for i := 0; i < retries; i++ {
+		res, err = c.clients[n].FilterLogs(q)
+		if err == nil {
+			return res, err
+		}
+	}
+
+	for i := 0; i < len(c.clients); i++ {
+		newN := (n + i) % len(c.clients)
+		res, err = c.clients[newN].FilterLogs(q)
+		if err == nil {
+			c.mu.Lock()
+			c.n = newN
+			c.mu.Unlock()
+			return res, err
+		}
+	}
+	return res, err
+}
+
 // NewRPCClient returns a new Client for fetching Ethereum blocks using the given
 // ethclient.Client.
-func NewRPCClient(rpcURL string, requestTimeout time.Duration) (*RPCClient, error) {
+func NewRPCClient(rpcURL string, requestTimeout time.Duration) (Client, error) {
 	ethClient, err := ethclient.Dial(rpcURL)
 	if err != nil {
 		return nil, err
