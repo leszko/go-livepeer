@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/golang/glog"
 	"math/big"
 	"strings"
 	"sync"
@@ -37,18 +38,35 @@ type RPCFailoverClient struct {
 	clients []Client
 	n       int
 	mu      sync.Mutex
+	ethUrls []string
 }
 
 func NewFailoverRPCClient(rpcURLs string, requestTimeout time.Duration) (Client, error) {
 	var clients []Client
-	for _, url := range strings.Split(rpcURLs, ",") {
+	urls := strings.Split(rpcURLs, ",")
+	for _, url := range urls {
 		client, err := NewRPCClient(url, requestTimeout)
 		if err != nil {
 			return nil, err
 		}
 		clients = append(clients, client)
 	}
-	return &RPCFailoverClient{clients: clients}, nil
+	c := &RPCFailoverClient{clients: clients, ethUrls: urls}
+	go func() {
+		ticker := time.NewTicker(10 * time.Minute)
+		for {
+			select {
+			case <-ticker.C:
+				c.mu.Lock()
+				if c.n != 0 {
+					glog.V(6).Infof("Refreshing to use the first defined ETH URL: %s", c.ethUrls[0])
+					c.n = 0
+				}
+				c.mu.Unlock()
+			}
+		}
+	}()
+	return c, nil
 }
 
 const retries = 3
@@ -73,6 +91,7 @@ func (c *RPCFailoverClient) HeaderByNumber(number *big.Int) (*MiniHeader, error)
 		res, err = c.clients[newN].HeaderByNumber(number)
 		if err == nil {
 			c.mu.Lock()
+			glog.V(6).Infof("Failing over to ETH URL: %s", c.ethUrls[newN])
 			c.n = newN
 			c.mu.Unlock()
 			return res, err
@@ -101,6 +120,7 @@ func (c *RPCFailoverClient) HeaderByHash(hash common.Hash) (*MiniHeader, error) 
 		res, err = c.clients[newN].HeaderByHash(hash)
 		if err == nil {
 			c.mu.Lock()
+			glog.V(6).Infof("Failing over to ETH URL: %s", c.ethUrls[newN])
 			c.n = newN
 			c.mu.Unlock()
 			return res, err
@@ -129,6 +149,7 @@ func (c *RPCFailoverClient) FilterLogs(q ethereum.FilterQuery) ([]types.Log, err
 		res, err = c.clients[newN].FilterLogs(q)
 		if err == nil {
 			c.mu.Lock()
+			glog.V(6).Infof("Failing over to ETH URL: %s", c.ethUrls[newN])
 			c.n = newN
 			c.mu.Unlock()
 			return res, err
