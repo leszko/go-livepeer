@@ -146,7 +146,7 @@ else
   # If we have clang, we can compile with CUDA support!
   if which clang >/dev/null; then
     echo "clang detected, building with GPU and Tensorflow support"
-    EXTRA_FFMPEG_FLAGS="$EXTRA_FFMPEG_FLAGS --enable-nonfree --enable-cuda-nvcc --enable-cuda --enable-libnpp --enable-cuda-llvm --enable-cuvid --enable-nvenc --enable-decoder=h264_cuvid,hevc_cuvid,vp8_cuvid,vp9_cuvid --enable-filter=scale_npp,signature_cuda,hwupload_cuda --enable-encoder=h264_nvenc,hevc_nvenc"
+    EXTRA_FFMPEG_FLAGS="$EXTRA_FFMPEG_FLAGS --enable-nonfree --enable-cuda-nvcc --enable-cuda --enable-libnpp --enable-cuda-llvm --enable-cuvid --enable-nvenc --enable-decoder=h264_cuvid,hevc_cuvid,vp8_cuvid,vp9_cuvid --enable-filter=scale_cuda,scale_npp,signature_cuda,hwupload_cuda --enable-encoder=h264_nvenc,hevc_nvenc"
     if [[ ! -e "${ROOT}/compiled/lib/libtensorflow_framework.so" ]]; then
       LIBTENSORFLOW_VERSION=2.12.1 &&
         curl -LO https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-gpu-linux-x86_64-${LIBTENSORFLOW_VERSION}.tar.gz &&
