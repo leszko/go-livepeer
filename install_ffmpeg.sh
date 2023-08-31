@@ -68,7 +68,6 @@ fi
 
 export PATH="$ROOT/compiled/bin:${PATH}"
 export PKG_CONFIG_PATH="${PKG_CONFIG_PATH:-}:$ROOT/compiled/lib/pkgconfig"
-export LD_LIBRARY_PATH="${ROOT}/compiled/lib:${LD_LIBRARY_PATH}"
 
 mkdir -p "$ROOT/"
 
