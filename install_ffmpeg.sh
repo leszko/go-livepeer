@@ -146,7 +146,7 @@ else
   # If we have clang, we can compile with CUDA support!
   if which clang >/dev/null; then
     echo "clang detected, building with GPU and Tensorflow support"
-    EXTRA_FFMPEG_FLAGS="$EXTRA_FFMPEG_FLAGS --enable-cuda --enable-cuda-llvm --enable-cuvid --enable-nvenc --enable-decoder=h264_cuvid,hevc_cuvid,vp8_cuvid,vp9_cuvid --enable-filter=scale_npp,signature_cuda,hwupload_cuda --enable-encoder=h264_nvenc,hevc_nvenc"
+    EXTRA_FFMPEG_FLAGS="$EXTRA_FFMPEG_FLAGS --enable-nonfree --enable-cuda-nvcc --enable-cuda --enable-libnpp --enable-cuda-llvm --enable-cuvid --enable-nvenc --enable-decoder=h264_cuvid,hevc_cuvid,vp8_cuvid,vp9_cuvid --enable-filter=scale_npp,signature_cuda,hwupload_cuda --enable-encoder=h264_nvenc,hevc_nvenc"
     if [[ ! -e "${ROOT}/compiled/lib/libtensorflow_framework.so" ]]; then
       LIBTENSORFLOW_VERSION=2.12.1 &&
         curl -LO https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-gpu-linux-x86_64-${LIBTENSORFLOW_VERSION}.tar.gz &&
@@ -173,9 +173,6 @@ if [[ ! -e "$ROOT/ffmpeg/libavcodec/libavcodec.a" ]]; then
   cd "$ROOT/ffmpeg"
   git checkout 2e18d069668c143f3c251067abd25389e411d022
   ./configure ${TARGET_OS:-} $DISABLE_FFMPEG_COMPONENTS --fatal-warnings \
-    --enable-nonfree \
-    --enable-cuda-nvcc \
-    --enable-libnpp \
     --enable-libx264 --enable-gpl \
     --enable-protocol=rtmp,file,pipe \
     --enable-muxer=mpegts,hls,segment,mp4,hevc,matroska,webm,null --enable-demuxer=flv,mpegts,mp4,mov,webm,matroska \
@@ -186,7 +183,7 @@ if [[ ! -e "$ROOT/ffmpeg/libavcodec/libavcodec.a" ]]; then
     --enable-encoder=aac,opus,libx264 \
     --enable-decoder=aac,opus,h264 \
     --extra-cflags="-I${ROOT}/compiled/include -I/usr/local/cuda/include ${EXTRA_CFLAGS}" \
-    --extra-ldflags="-L${ROOT}/compiled/lib:/usr/local/cuda/lib64 -L/usr/local/cuda/lib64 ${EXTRA_FFMPEG_LDFLAGS}" \
+    --extra-ldflags="-L${ROOT}/compiled/lib -L/usr/local/cuda/lib64 ${EXTRA_FFMPEG_LDFLAGS}" \
     --prefix="$ROOT/compiled" \
     $EXTRA_FFMPEG_FLAGS \
     $DEV_FFMPEG_FLAGS
