@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM	ubuntu:20.04	as	build
+FROM --platform=$BUILDPLATFORM nvidia/cuda:11.7.1-cudnn8-devel-ubuntu20.04 as build
 
 ARG	TARGETARCH
 ARG	BUILDARCH
@@ -11,7 +11,7 @@ ENV	GOARCH="$TARGETARCH" \
 	DEBIAN_FRONTEND="noninteractive"
 
 RUN	apt update \
-	&& apt install -yqq software-properties-common curl apt-transport-https lsb-release \
+	&& apt install -yqq software-properties-common curl apt-transport-https lsb-release yasm \
 	&& curl -fsSL https://dl.google.com/go/go1.20.4.linux-${BUILDARCH}.tar.gz | tar -C /usr/local -xz \
 	&& curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - \
 	&& add-apt-repository "deb [arch=${BUILDARCH}] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" \
@@ -59,9 +59,9 @@ COPY	.	.
 
 RUN	make livepeer livepeer_cli livepeer_bench livepeer_router
 
-FROM --platform=$TARGETPLATFORM	nvidia/cuda:11.7.1-cudnn8-runtime-ubuntu20.04 AS livepeer-amd64-base
+FROM --platform=$TARGETPLATFORM	nvidia/cuda:11.7.1-cudnn8-devel-ubuntu20.04 AS livepeer-amd64-base
 
-FROM --platform=$TARGETPLATFORM	nvidia/cuda:11.7.1-cudnn8-runtime-ubuntu20.04 AS livepeer-arm64-base
+FROM --platform=$TARGETPLATFORM	nvidia/cuda:11.7.1-cudnn8-devel-ubuntu20.04 AS livepeer-arm64-base
 
 FROM	livepeer-${TARGETARCH}-base
 
