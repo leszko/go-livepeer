@@ -97,9 +97,6 @@ jobs:
       - name: Install ffmpeg
         if: steps.cache-ffmpeg.outputs.cache-hit != 'true'
         run: ./install_ffmpeg.sh
-        env:
-          LD_LIBRARY_PATH: "/home/runner/compiled/lib:${LD_LIBRARY_PATH}"
-          PKG_CONFIG_PATH: "/home/runner/compiled/lib/pkgconfig"
 
       - name: Build binaries
         env:
@@ -182,9 +179,6 @@ jobs:
       - name: Install ffmpeg
         if: steps.cache-ffmpeg.outputs.cache-hit != 'true'
         run: ./install_ffmpeg.sh
-        env:
-          LD_LIBRARY_PATH: "/home/runner/compiled/lib:${LD_LIBRARY_PATH}"
-          PKG_CONFIG_PATH: "/home/runner/compiled/lib/pkgconfig"
 
       - name: Build binaries
         env:
@@ -297,9 +291,6 @@ jobs:
       - name: Install ffmpeg
         if: steps.cache-ffmpeg.outputs.cache-hit != 'true'
         run: ./install_ffmpeg.sh
-        env:
-          LD_LIBRARY_PATH: "/home/runner/compiled/lib:${LD_LIBRARY_PATH}"
-          PKG_CONFIG_PATH: "/home/runner/compiled/lib/pkgconfig"
 
       - name: Build binaries
         env:
