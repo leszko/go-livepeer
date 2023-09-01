@@ -107,7 +107,7 @@ jobs:
           GHA_REF: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref }}
           PKG_CONFIG_PATH: "/home/runner/compiled/lib/pkgconfig"
           CPATH: "/usr/local/cuda/include"
-	        LIBRARY_PATH: "/usr/local/cuda/lib64"
+          LIBRARY_PATH: "/usr/local/cuda/lib64"
         run: |
           git config --global --add safe.directory '*'
           ./ci_env.sh make
@@ -190,7 +190,7 @@ jobs:
         env:
           GHA_REF: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref }}
           CPATH: "/usr/local/cuda/include"
-	        LIBRARY_PATH: "/usr/local/cuda/lib64"
+          LIBRARY_PATH: "/usr/local/cuda/lib64"
         run: |
           git config --global --add safe.directory '*'
           export PKG_CONFIG_PATH=~/compiled/lib/pkgconfig
@@ -309,7 +309,7 @@ jobs:
           GHA_REF: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref }}
           PKG_CONFIG_PATH: "/home/runner/compiled/lib/pkgconfig"
           CPATH: "/usr/local/cuda/include"
-	        LIBRARY_PATH: "/usr/local/cuda/lib64"
+          LIBRARY_PATH: "/usr/local/cuda/lib64"
         run: |
           git config --global --add safe.directory '*'
           ./ci_env.sh make cgo_cflags="-lz" all
