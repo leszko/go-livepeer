@@ -18,6 +18,8 @@ jobs:
     runs-on: ${{ matrix.platform.runner }}
     container:
       image: nvidia/cuda:11.7.1-cudnn8-devel-ubuntu20.04
+      env:
+        DEBIAN_FRONTEND: noninteractive
     strategy:
       fail-fast: false
       matrix:
@@ -231,6 +233,8 @@ jobs:
     runs-on: ubuntu-20.04
     container:
       image: nvidia/cuda:11.7.1-cudnn8-devel-ubuntu20.04
+      env:
+        DEBIAN_FRONTEND: noninteractive
 
     steps:
       - name: Setup ubuntu container
