@@ -110,6 +110,9 @@ jobs:
           LIBRARY_PATH: "/usr/local/cuda/lib64"
         run: |
           git config --global --add safe.directory '*'
+          export PKG_CONFIG_PATH=~/compiled/lib/pkgconfig
+          export CPATH="/usr/local/cuda/include"
+          export LIBRARY_PATH="/usr/local/cuda/lib64"
           ./ci_env.sh make
 
       - name: Upload build
@@ -194,6 +197,8 @@ jobs:
         run: |
           git config --global --add safe.directory '*'
           export PKG_CONFIG_PATH=~/compiled/lib/pkgconfig
+          export CPATH="/usr/local/cuda/include"
+          export LIBRARY_PATH="/usr/local/cuda/lib64"
           ./ci_env.sh make
 
       - uses: actions-ecosystem/action-regex-match@v2
@@ -312,6 +317,9 @@ jobs:
           LIBRARY_PATH: "/usr/local/cuda/lib64"
         run: |
           git config --global --add safe.directory '*'
+          export PKG_CONFIG_PATH=~/compiled/lib/pkgconfig
+          export CPATH="/usr/local/cuda/include"
+          export LIBRARY_PATH="/usr/local/cuda/lib64"
           ./ci_env.sh make cgo_cflags="-lz" all
           rm -rf ~/build && mkdir ~/build && mv livepeer* ~/build/
 
