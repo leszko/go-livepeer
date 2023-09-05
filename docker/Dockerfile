@@ -1,5 +1,8 @@
 FROM --platform=$BUILDPLATFORM leszko/cuda:11.7.1-cudnn8-devel-ubuntu20.04-${TARGETARCH} as build
 
+ARG	TARGETARCH
+ARG	BUILDARCH
+
 ENV	GOARCH="$TARGETARCH" \
 	PATH="/usr/local/go/bin:/go/bin:${PATH}" \
 	PKG_CONFIG_PATH="/root/compiled/lib/pkgconfig" \
