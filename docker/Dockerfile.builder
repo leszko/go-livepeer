@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM leszko/cuda:11.7.1-cudnn8-devel-ubuntu20.04-${TARGETARCH} as build
+FROM --platform=$BUILDPLATFORM leszko/cuda:11.7.1-cudnn8-devel-ubuntu20.04-linux-${TARGETARCH} as build
 
 ARG	TARGETARCH
 ARG	BUILDARCH
