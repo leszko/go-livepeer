@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM leszko/cuda:11.7.1-cudnn8-devel-ubuntu20.04-all as build
+FROM --platform=$BUILDPLATFORM leszko/cuda:11.7.1-cudnn8-devel-ubuntu20.04-windows-amd64 as build
 
 ARG	TARGETARCH
 ARG	BUILDARCH
@@ -9,10 +9,11 @@ ENV	GOARCH="$TARGETARCH" \
 	CPATH="/usr/local/cuda/include" \
 	LIBRARY_PATH="/usr/local/cuda/lib64" \
 	DEBIAN_FRONTEND="noninteractive" \
-	CGO_LDFLAGS="-L/usr/local/cuda/lib64"
+	CGO_LDFLAGS="-L/usr/local/cuda/lib64" \
+	GOOS="windows"
 
 RUN	apt update \
-	&& apt install -yqq software-properties-common curl apt-transport-https lsb-release yasm \
+	&& apt install -yqq software-properties-common curl apt-transport-https lsb-release yasm zip \
 	&& curl -fsSL https://dl.google.com/go/go1.20.4.linux-${BUILDARCH}.tar.gz | tar -C /usr/local -xz \
 	&& curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - \
 	&& add-apt-repository "deb [arch=${BUILDARCH}] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" \
@@ -24,6 +25,11 @@ RUN	apt update \
 RUN	update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-12 30 \
 	&& update-alternatives --install /usr/bin/clang clang /usr/bin/clang-12 30 \
 	&& update-alternatives --install /usr/bin/ld ld /usr/bin/lld-12 30
+
+RUN	GRPC_HEALTH_PROBE_VERSION=v0.3.6 \
+	&& curl -fsSL https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-${TARGETARCH} -o /usr/bin/grpc_health_probe \
+	&& chmod +x /usr/bin/grpc_health_probe \
+	&& ldconfig /usr/local/lib
 
 # note: for runtime, Tensorflow version needs to be compatible with CUDA and CuDNN of the image
 RUN	LIBTENSORFLOW_VERSION=2.12.1 \
@@ -47,11 +53,6 @@ ENV	BUILD_TAGS=${BUILD_TAGS}
 COPY	go.mod	go.sum	./
 RUN	go mod download
 
-# RUN	GRPC_HEALTH_PROBE_VERSION=v0.3.6 \
-# 	&& curl -fsSL https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-${TARGETARCH} -o /usr/bin/grpc_health_probe \
-# 	&& chmod +x /usr/bin/grpc_health_probe \
-# 	&& ldconfig /usr/local/lib
-
-# RUN	./install_ffmpeg.sh \
-# 	&& GO111MODULE=on go get -v github.com/golangci/golangci-lint/cmd/golangci-lint@v1.52.2 \
-# 	&& go get -v github.com/jstemmer/go-junit-report
+RUN	./install_ffmpeg.sh \
+	&& GO111MODULE=on go get -v github.com/golangci/golangci-lint/cmd/golangci-lint@v1.52.2 \
+	&& go get -v github.com/jstemmer/go-junit-report

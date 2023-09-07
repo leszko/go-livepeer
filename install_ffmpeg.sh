@@ -20,8 +20,8 @@ fi
 if [[ "$ARCH" == "x86_64" && "$UNAME" == "Linux" && "${GOARCH:-}" == "arm64" ]]; then
   echo "cross-compiling linux-arm64"
   export CC="clang --sysroot=/usr/aarch64-linux-gnu"
-  EXTRA_CFLAGS="--target=aarch64-linux-gnu $EXTRA_CFLAGS"
-  EXTRA_LDFLAGS="--target=aarch64-linux-gnu $EXTRA_LDFLAGS"
+  EXTRA_CFLAGS="--target=aarch64-linux-gnu -I/usr/local/cuda_arm64/include $EXTRA_CFLAGS"
+  EXTRA_LDFLAGS="--target=aarch64-linux-gnu -L/usr/local/cuda_arm64/lib64 $EXTRA_LDFLAGS"
   EXTRA_FFMPEG_FLAGS="$EXTRA_FFMPEG_FLAGS --arch=aarch64 --enable-cross-compile --cc=clang --sysroot=/usr/aarch64-linux-gnu"
   HOST_OS="--host=aarch64-linux-gnu"
   IS_ARM64=1
@@ -182,8 +182,8 @@ if [[ ! -e "$ROOT/ffmpeg/libavcodec/libavcodec.a" ]]; then
     --enable-filter=aresample,asetnsamples,fps,scale,hwdownload,select,livepeer_dnn,signature \
     --enable-encoder=aac,opus,libx264 \
     --enable-decoder=aac,opus,h264 \
-    --extra-cflags="-I${ROOT}/compiled/include -I/usr/local/cuda/include ${EXTRA_CFLAGS}" \
-    --extra-ldflags="-L${ROOT}/compiled/lib -L/usr/local/cuda/lib64 ${EXTRA_FFMPEG_LDFLAGS}" \
+    --extra-cflags="${EXTRA_CFLAGS} -I${ROOT}/compiled/include -I/usr/local/cuda/include" \
+    --extra-ldflags="${EXTRA_FFMPEG_LDFLAGS} -L${ROOT}/compiled/lib -L/usr/local/cuda/lib64" \
     --prefix="$ROOT/compiled" \
     $EXTRA_FFMPEG_FLAGS \
     $DEV_FFMPEG_FLAGS

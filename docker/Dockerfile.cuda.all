@@ -1,0 +1,24 @@
+# Building base docker image with CUDA SDK for the given architecture
+
+# FROM ubuntu:20.04
+FROM leszko/cuda:11.7.1-cudnn8-devel-ubuntu20.04-amd64
+# RUN rm -r /usr/local/cuda/lib64 /usr/local/cuda/include
+# RUN rm -r /usr/local/cuda/include
+
+# ENV	GOARCH="$TARGETARCH" \
+# 	PATH="/usr/local/go/bin:/go/bin:${PATH}" \
+# 	PKG_CONFIG_PATH="/root/compiled/lib/pkgconfig" \
+# 	CPATH="/usr/local/cuda/include" \
+# 	LIBRARY_PATH="/usr/local/cuda/lib64" \
+# 	DEBIAN_FRONTEND="noninteractive" \
+# 	CGO_LDFLAGS="-L/usr/local/cuda/lib64"
+
+# RUN apt update \
+#  && apt install -yqq build-essential yasm cmake libtool libc6 libc6-dev unzip wget libnuma1 libnuma-dev
+
+COPY npp_win/lib/x64/* /usr/local/cuda/lib64/
+COPY npp_win/include/* /usr/local/cuda/include/
+
+RUN mkdir -p /usr/local/cuda_arm64/lib64/
+COPY cuda/arm64/usr/local/cuda/lib64/libnp* /usr/local/cuda_arm64/lib64/
+COPY cuda/arm64/usr/local/cuda/include /usr/local/cuda_arm64/include

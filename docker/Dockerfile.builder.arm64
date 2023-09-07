@@ -1,7 +1,7 @@
-FROM --platform=$BUILDPLATFORM leszko/cuda:11.7.1-cudnn8-devel-ubuntu20.04-all as build
+FROM --platform=$BUILDPLATFORM leszko/cuda:11.7.1-cudnn8-devel-ubuntu20.04-arm64-lite4
 
-ARG	TARGETARCH
-ARG	BUILDARCH
+ARG	TARGETARCH="arm64"
+ARG	BUILDARCH="amd64"
 
 ENV	GOARCH="$TARGETARCH" \
 	PATH="/usr/local/go/bin:/go/bin:${PATH}" \
@@ -25,6 +25,11 @@ RUN	update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-12 3
 	&& update-alternatives --install /usr/bin/clang clang /usr/bin/clang-12 30 \
 	&& update-alternatives --install /usr/bin/ld ld /usr/bin/lld-12 30
 
+RUN	GRPC_HEALTH_PROBE_VERSION=v0.3.6 \
+	&& curl -fsSL https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-${TARGETARCH} -o /usr/bin/grpc_health_probe \
+	&& chmod +x /usr/bin/grpc_health_probe \
+	&& ldconfig /usr/local/lib
+
 # note: for runtime, Tensorflow version needs to be compatible with CUDA and CuDNN of the image
 RUN	LIBTENSORFLOW_VERSION=2.12.1 \
 	&& curl -LO https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-gpu-linux-x86_64-${LIBTENSORFLOW_VERSION}.tar.gz \
@@ -47,11 +52,6 @@ ENV	BUILD_TAGS=${BUILD_TAGS}
 COPY	go.mod	go.sum	./
 RUN	go mod download
 
-# RUN	GRPC_HEALTH_PROBE_VERSION=v0.3.6 \
-# 	&& curl -fsSL https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-${TARGETARCH} -o /usr/bin/grpc_health_probe \
-# 	&& chmod +x /usr/bin/grpc_health_probe \
-# 	&& ldconfig /usr/local/lib
-
-# RUN	./install_ffmpeg.sh \
-# 	&& GO111MODULE=on go get -v github.com/golangci/golangci-lint/cmd/golangci-lint@v1.52.2 \
-# 	&& go get -v github.com/jstemmer/go-junit-report
+RUN	./install_ffmpeg.sh \
+	&& GO111MODULE=on go get -v github.com/golangci/golangci-lint/cmd/golangci-lint@v1.52.2 \
+	&& go get -v github.com/jstemmer/go-junit-report
