@@ -28,9 +28,9 @@ jobs:
           - amd64
         platform:
           - name: linux
-            runner: ubuntu-latest-m
+            runner: ubuntu-20.04
           - name: windows
-            runner: ubuntu-latest-m
+            runner: ubuntu-20.04
         exclude:
           - platform:
               name: windows
