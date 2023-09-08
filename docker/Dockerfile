@@ -25,15 +25,15 @@ RUN	update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-12 3
 	&& update-alternatives --install /usr/bin/clang clang /usr/bin/clang-12 30 \
 	&& update-alternatives --install /usr/bin/ld ld /usr/bin/lld-12 30
 
-# note: for runtime, Tensorflow version needs to be compatible with CUDA and CuDNN of the image
-RUN	LIBTENSORFLOW_VERSION=2.12.1 \
-	&& curl -LO https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-gpu-linux-x86_64-${LIBTENSORFLOW_VERSION}.tar.gz \
-	&& mkdir /tf && tar -C /tf -xzf libtensorflow-gpu-linux-x86_64-${LIBTENSORFLOW_VERSION}.tar.gz
-
 RUN	GRPC_HEALTH_PROBE_VERSION=v0.3.6 \
 	&& curl -fsSL https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-${TARGETARCH} -o /usr/bin/grpc_health_probe \
 	&& chmod +x /usr/bin/grpc_health_probe \
 	&& ldconfig /usr/local/lib
+
+# note: for runtime, Tensorflow version needs to be compatible with CUDA and CuDNN of the image
+RUN	LIBTENSORFLOW_VERSION=2.12.1 \
+	&& curl -LO https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-gpu-linux-x86_64-${LIBTENSORFLOW_VERSION}.tar.gz \
+	&& mkdir /tf && tar -C /tf -xzf libtensorflow-gpu-linux-x86_64-${LIBTENSORFLOW_VERSION}.tar.gz
 
 ENV	GOPATH=/go \
 	GO_BUILD_DIR=/build/ \
