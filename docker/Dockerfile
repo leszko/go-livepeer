@@ -6,10 +6,10 @@ ARG	BUILDARCH
 ENV	GOARCH="$TARGETARCH" \
 	PATH="/usr/local/go/bin:/go/bin:${PATH}" \
 	PKG_CONFIG_PATH="/root/compiled/lib/pkgconfig" \
-	CPATH="/usr/local/cuda/include" \
-	LIBRARY_PATH="/usr/local/cuda/lib64" \
+	CPATH="/usr/local/cuda_${TARGETARCH}/include" \
+	LIBRARY_PATH="/usr/local/cuda_${TARGETARCH}/lib64" \
 	DEBIAN_FRONTEND="noninteractive" \
-	CGO_LDFLAGS="-L/usr/local/cuda/lib64"
+	CGO_LDFLAGS="-L/usr/local/cuda_${TARGETARCH}/lib64"
 
 RUN	apt update \
 	&& apt install -yqq software-properties-common curl apt-transport-https lsb-release yasm \

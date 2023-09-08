@@ -22,3 +22,4 @@ COPY npp_win/include/* /usr/local/cuda/include/
 RUN mkdir -p /usr/local/cuda_arm64/lib64/
 COPY cuda/arm64/usr/local/cuda/lib64/libnp* /usr/local/cuda_arm64/lib64/
 COPY cuda/arm64/usr/local/cuda/include /usr/local/cuda_arm64/include
+RUN ln -s /usr/local/cuda /usr/local/cuda_amd64
