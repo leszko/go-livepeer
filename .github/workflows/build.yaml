@@ -107,6 +107,8 @@ jobs:
           GHA_REF: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref }}
         run: |
           git config --global --add safe.directory '*'
+          env
+          echo ${PKG_CONFIG_PATH}
           ./ci_env.sh make
 
       - name: Upload build
