@@ -77,7 +77,7 @@ jobs:
           echo "PKG_CONFIG_PATH=/root/compiled/lib/pkgconfig" >> $GITHUB_ENV
           echo "CPATH=/usr/local/cuda_${{ matrix.arch }}/include" >> $GITHUB_ENV
           echo "LIBRARY_PATH=/usr/local/cuda_${{ matrix.arch }}/lib64" >> $GITHUB_ENV
-          echo "CGO_LDFLAGS=-L/usr/local/cuda_${TARGETARCH}/lib64" >> $GITHUB_ENV
+          echo "CGO_LDFLAGS=-L/usr/local/cuda_${{ matrix.arch }}/lib64" >> $GITHUB_ENV
 
       - name: Install dependencies
         run: |
