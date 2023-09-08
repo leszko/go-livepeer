@@ -52,10 +52,6 @@ jobs:
           # for ref value discussion
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - name: Cleanup hosted runner
-        run: |
-          sudo rm -rf /usr/share/dotnet /usr/local/lib/android
-
       - name: Set up go
         id: go
         uses: actions/setup-go@v4
