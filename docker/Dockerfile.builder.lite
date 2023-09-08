@@ -1,4 +1,0 @@
-FROM leszko/go-livepeer-builder:amd64 as build
-
-
-
