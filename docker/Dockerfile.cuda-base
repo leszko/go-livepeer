@@ -4,7 +4,7 @@
 #
 # To build this image you need the following steps:
 # 1. Download NVIDIA CUDA SDK for ARM64, extract, and copy into cuda/arm64/usr/local/cuda/
-# 2. Downlaod NVIDIA CUDA SDK for Windows AMD64, extract, and copy npp libs into npp_win/
+# 2. Download NVIDIA CUDA SDK for Windows AMD64, extract, and copy npp libs into npp_win/
 
 FROM nvidia/cuda:11.7.1-cudnn8-devel-ubuntu20.04
 
