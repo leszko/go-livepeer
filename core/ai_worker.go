@@ -91,7 +91,7 @@ func (orch *orchestrator) ServeAIWorker(stream net.AIWorker_RegisterAIWorkerServ
 func (n *LivepeerNode) serveAIWorker(stream net.AIWorker_RegisterAIWorkerServer, capabilities *net.Capabilities) {
 	from := common.GetConnectionAddr(stream.Context())
 	wkrCaps := CapabilitiesFromNetCapabilities(capabilities)
-	glog.Infof("checking worker is compatible with orchestrator: worker_version=%s orchestrator_version=%s worker_addr=%s", capabilities.Version, n.Capabilities.constraints.minVersion, from)
+	glog.Infof("Checking Worker version compatibility: worker_version=%s orchestrator_version=%s worker_addr=%s", capabilities.Version, n.Capabilities.constraints.minVersion, from)
 	if n.Capabilities.LivepeerVersionCompatibleWith(capabilities) {
 		n.Capabilities.AddCapacity(wkrCaps)
 		n.AddAICapabilities(wkrCaps)
